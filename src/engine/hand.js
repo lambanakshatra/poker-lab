@@ -97,6 +97,7 @@ export function applyHandAction(hand, playerId, action, raiseTo=null) {
   hand.round=result.state;
   hand.history.push({type:"action",street:hand.street,playerId,action,raiseTo,paid,pot:hand.pot});
   if(hand.players.filter(p=>!p.folded).length===1) {
+    returnUncalledExcess(hand);
     const winner=hand.players.find(p=>!p.folded);
     winner.stack+=hand.pot;
     hand.result={winnerIds:[winner.id],payouts:{[winner.id]:hand.pot},reason:"everyone_folded"};
