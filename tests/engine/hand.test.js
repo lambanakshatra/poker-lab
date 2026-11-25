@@ -55,7 +55,14 @@ test("showdown settles a completed board and conserves chips",()=>{
  assert.equal(h.status,"complete");
  assert.equal(h.players.reduce((n,p)=>n+p.stack,0),totalBefore);
 });
-\ntest("heads-up button acts first on the flop",()=>{\n let h=startHand({players:[{id:"A",stack:100},{id:"B",stack:100}],buttonId:"A",smallBlind:5,bigBlind:10,deck:orderedDeck});\n ({hand:h}=applyHandAction(h,"A","call")); ({hand:h}=applyHandAction(h,"B","check"));\n h=advanceStreet(h);\n assert.equal(h.round.currentPlayer,"A");\n});\n
+
+test("heads-up button acts first on the flop",()=>{
+ let h=startHand({players:[{id:"A",stack:100},{id:"B",stack:100}],buttonId:"A",smallBlind:5,bigBlind:10,deck:orderedDeck});
+ ({hand:h}=applyHandAction(h,"A","call")); ({hand:h}=applyHandAction(h,"B","check"));
+ h=advanceStreet(h);
+ assert.equal(h.round.currentPlayer,"A");
+});
+
 test("multiway all-in automatically runs out the board to showdown",()=>{
  let h=startHand({players:[{id:"A",stack:20},{id:"B",stack:25},{id:"C",stack:20}],buttonId:"A",smallBlind:5,bigBlind:10,deck:orderedDeck});
  ({hand:h}=applyHandAction(h,"A","all-in"));
