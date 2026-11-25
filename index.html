@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090c0b">
+  <meta name="description" content="Poker Lab — your personal poker training workspace.">
+  <title>Poker Lab</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/src/app.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Main navigation">
+      <a class="brand" href="#home" aria-label="Poker Lab home"><span class="brand-mark">P</span><span>POKER<span class="brand-light">LAB</span></span></a>
+      <div class="nav-label">WORKSPACE</div>
+      <nav class="nav-list">
+        <a class="nav-link active" href="#home" data-page="home"><span>⌂</span>Home</a>
+        <a class="nav-link" href="#coaching" data-page="coaching"><span>◷</span>30-Session Coaching</a>
+        <a class="nav-link" href="#puzzles" data-page="puzzles"><span>◇</span>Daily Puzzles</a>
+        <a class="nav-link" href="#arena" data-page="arena"><span>♧</span>Practice Arena</a>
+        <a class="nav-link" href="#reviews" data-page="reviews"><span>▤</span>Hand Reviews</a>
+        <a class="nav-link" href="#performance" data-page="performance"><span>↗</span>My Performance</a>
+        <a class="nav-link" href="#opponents" data-page="opponents"><span>◎</span>Opponent Lab</a>
+        <a class="nav-link" href="#playbook" data-page="playbook"><span>▣</span>My Playbook</a>
+      </nav>
+      <div class="sidebar-bottom"><div class="profile-mini"><div class="avatar">PL</div><div><strong>Poker Student</strong><small>Training workspace</small></div></div></div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div class="mobile-brand"><span class="brand-mark">P</span> POKER<span class="brand-light">LAB</span></div>
+        <div class="breadcrumbs"><span>WORKSPACE</span><b>/</b><strong id="page-crumb">HOME</strong></div>
+        <div class="top-actions"><span class="level-pill">LEVEL 01 <i>•</i> BEGINNER</span><button class="icon-button" aria-label="Notifications" title="Notifications">♧</button><div class="avatar small">PL</div></div>
+      </header>
+      <section id="page-content" class="page-content" aria-live="polite">
+        <div class="welcome-row"><div><p class="eyebrow">YOUR TRAINING FLOOR</p><h1>Welcome back.</h1><p class="muted">Build better decisions, one hand at a time.</p></div><div class="date-chip"><span class="live-dot"></span> PERSONAL WORKSPACE</div></div>
+        <div class="hero-grid">
+          <article class="card continue-card"><div class="card-kicker green-kicker">YOUR NEXT MOVE</div><h2>Build your poker foundation</h2><p>Start with position, hand selection and disciplined preflop decisions.</p><div class="hero-footer"><span class="muted">30-session coaching path</span><button class="primary-button" data-go="coaching">View coaching <span>→</span></button></div><div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div></article>
+          <article class="card daily-card"><div class="card-kicker blue-kicker">DAILY PUZZLE</div><div class="puzzle-icon">♠</div><h3>One decision. One lesson.</h3><p>Train your instincts with a focused poker spot.</p><button class="secondary-button" data-go="puzzles">Explore puzzles <span>→</span></button></article>
+        </div>
+        <div class="section-heading"><div><p class="eyebrow">YOUR WORKSPACE</p><h2>Choose where to train</h2></div></div>
+        <div class="module-grid">
+          <button class="module-card" data-go="arena"><span class="module-icon green-icon">♧</span><strong>Practice Arena</strong><small>Play hands against practice opponents</small><span class="module-arrow">↗</span></button>
+          <button class="module-card" data-go="reviews"><span class="module-icon blue-icon">▤</span><strong>Hand Reviews</strong><small>Review decisions street by street</small><span class="module-arrow">↗</span></button>
+          <button class="module-card" data-go="performance"><span class="module-icon red-icon">↗</span><strong>My Performance</strong><small>Track your progress and recurring leaks</small><span class="module-arrow">↗</span></button>
+          <button class="module-card" data-go="opponents"><span class="module-icon blue-icon">◎</span><strong>Opponent Lab</strong><small>Learn to adjust to player tendencies</small><span class="module-arrow">↗</span></button>
+          <button class="module-card" data-go="playbook"><span class="module-icon green-icon">▣</span><strong>My Playbook</strong><small>Keep your personal strategy notes</small><span class="module-arrow">↗</span></button>
+          <button class="module-card" data-go="coaching"><span class="module-icon red-icon">◷</span><strong>30-Session Coaching</strong><small>Follow your structured learning path</small><span class="module-arrow">↗</span></button>
+        </div>
+        <div class="notice"><span class="notice-mark">i</span><span><strong>Development build</strong> — this is the unified application shell. Training modules are being connected to the validated poker engine in the next stages.</span></div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
