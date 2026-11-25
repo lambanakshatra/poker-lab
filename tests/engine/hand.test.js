@@ -17,6 +17,8 @@ test("heads-up button posts small blind and acts first preflop",()=>{
  assert.equal(h.players.find(p=>p.id==="A").streetContribution,5);
  assert.equal(h.players.find(p=>p.id==="B").streetContribution,10);
  assert.equal(h.round.currentPlayer,"A");
+ assert.deepEqual(h.players.find(p=>p.id==="A").holeCards,["As","Qh"]);
+ assert.deepEqual(h.players.find(p=>p.id==="B").holeCards,["Kd","Jc"]);
 });
 
 test("folds award the pot immediately",()=>{
@@ -24,6 +26,7 @@ test("folds award the pot immediately",()=>{
  ({hand:h}=applyHandAction(h,"A","fold"));
  assert.equal(h.status,"complete");
  assert.equal(h.players.find(p=>p.id==="B").stack,105);
+ assert.equal(h.pot,0);
 });
 
 test("complete checks deal flop, turn and river in order",()=>{
@@ -53,6 +56,7 @@ test("showdown settles a completed board and conserves chips",()=>{
  const totalBefore=h.players.reduce((n,p)=>n+p.stack,0)+h.pot;
  settleShowdown(h);
  assert.equal(h.status,"complete");
+ assert.equal(h.pot,0);
  assert.equal(h.players.reduce((n,p)=>n+p.stack,0),totalBefore);
 });
 
