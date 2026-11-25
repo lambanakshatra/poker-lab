@@ -29,3 +29,17 @@ test("side pot winners are selected only from eligible players", () => {
   const settled = settleSidePots(players, (a,b)=>Math.sign(rank[a]-rank[b]));
   assert.deepEqual(settled.map(p=>p.winners), [["A"],["B"],["C"]]);
 });
+test("three-way all-in distributes main and side pots independently",()=>{
+ const players=[{id:"A",committed:50},{id:"B",committed:100},{id:"C",committed:150}];
+ const rank={A:2,B:3,C:1};
+ const result=settleSidePots(players,(a,b)=>Math.sign(rank[a]-rank[b]),["A","B","C"]);
+ assert.deepEqual(result.map(p=>p.amount),[150,100,50]);
+ assert.deepEqual(result.map(p=>p.winners),[["B"],["B"],["C"]]);
+ const paid=result.flatMap(p=>Object.values(p.payouts)).reduce((a,b)=>a+b,0);
+ assert.equal(paid,300);
+});
+test("tied main pot splits and awards odd chip clockwise",()=>{
+ const players=[{id:"A",committed:50},{id:"B",committed:50},{id:"C",committed:50}];
+ const result=settleSidePots(players,()=>0,["B","C","A"]);
+ assert.deepEqual(result[0].payouts,{B:51,C:50,A:50});
+});
