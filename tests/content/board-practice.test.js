@@ -2,12 +2,13 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { boardSpots } from "../../src/board-practice.js";
 import { boardSpotsBatch02 } from "../../src/board-practice-batch-02.js";
+import { boardSpotsBatch03 } from "../../src/board-practice-batch-03.js";
 import { categories, BANK_TARGET_PER_CATEGORY } from "../../src/question-bank.js";
-const allSpots = [...boardSpots, ...boardSpotsBatch02];
+const allSpots = [...boardSpots, ...boardSpotsBatch02, ...boardSpotsBatch03];
 
 test("board practice uses real hole cards and valid community boards", () => {
   assert.equal(BANK_TARGET_PER_CATEGORY, 200);
-  assert.ok(allSpots.length >= 75);
+  assert.ok(allSpots.length >= 105);
   const ids = allSpots.map(s => s.id);
   assert.equal(new Set(ids).size, ids.length);
   for (const spot of allSpots) {
@@ -25,6 +26,6 @@ test("board practice uses real hole cards and valid community boards", () => {
 test("board practice has balanced initial coverage in all 15 categories", () => {
   assert.equal(categories.length, 15);
   for (const category of categories) {
-    assert.equal(allSpots.filter(s => s.categoryId === category.id).length, 5, `Expected five board spots in ${category.id}`);
+    assert.equal(allSpots.filter(s => s.categoryId === category.id).length, 7, `Expected seven board spots in ${category.id}`);
   }
 });
