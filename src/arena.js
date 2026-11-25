@@ -159,65 +159,81 @@ export function mountArena(root) {
     const userTurn = current() === "you" && hand.status === "in_progress";
     const actions = myActions();
     const pot = hand.pot;
-    const board = hand.board.map(cardLabel).join("  ") || "Waiting for the flop";
-    const players = hand.players.map((p, i) => {
+    const reveal = hand.result?.reason === "showdown";
+    const mePlayer = me();
+    const holeCards = (mePlayer?.holeCards || []).map(c => {
+      const label = cardLabel(c), red = c[1] === "h" || c[1] === "d";
+      return `<span class="arena-playing-card ${red ? "red" : ""}"><b>${label.slice(0,-1)}</b><i>${label.slice(-1)}</i></span>`;
+    }).join("");
+    const community = hand.board.map(c => {
+      const label = cardLabel(c), red = c[1] === "h" || c[1] === "d";
+      return `<span class="arena-playing-card community-card ${red ? "red" : ""}"><b>${label.slice(0,-1)}</b><i>${label.slice(-1)}</i></span>`;
+    }).join("");
+    const seats = hand.players.map((p, i) => {
       const profile = profiles.find(x => x.id === p.id);
       const isYou = p.id === "you";
       const winner = hand.result?.winnerIds?.includes(p.id);
       const isTurn = current() === p.id && hand.status === "in_progress";
-      const reveal = hand.result?.reason === "showdown";
-      const cards = reveal || isYou ? p.holeCards.map(cardLabel).join(" ") : "▰ ▰";
       const position = positionNames[(i - buttonIndex + profiles.length) % profiles.length];
-      const positionTag = position === "SB" || position === "BB" || position === "BTN" ? position : "";
-      return `<div class="arena-seat ${isYou ? "is-you" : ""} ${isTurn ? "is-turn" : ""} ${p.folded ? "is-folded" : ""} ${winner ? "is-winner" : ""}">
-        <div class="seat-top"><strong>${profile.name}</strong><span class="seat-type ${typeColor(profile.type)}">${profile.type}</span></div>
-        <div class="seat-position">${positionTag || position}</div>
-        <div class="seat-cards">${cards}</div>
-        <div class="seat-stack">Stack <b> ${fmt(p.stack)}</b></div>
-        <div class="seat-state">${p.folded ? "FOLDED" : p.allIn ? "ALL-IN" : isTurn ? "ACTING" : winner ? "WINNER" : "IN HAND"}</div>
+      const cards = reveal || isYou ? p.holeCards.map(cardLabel).map(label => {
+        const red = label.endsWith("♥") || label.endsWith("♦");
+        return `<span class="mini-card ${red ? "red" : ""}">${label}</span>`;
+      }).join("") : '<span class="mini-card facedown">◆</span><span class="mini-card facedown">◆</span>';
+      return `<div class="arena-player player-${i} ${isYou ? "hero-seat" : ""} ${isTurn ? "is-turn" : ""} ${p.folded ? "is-folded" : ""} ${winner ? "is-winner" : ""}">
+        <div class="player-avatar ${typeColor(profile.type)}">${isYou ? "♠" : profile.name.slice(0,1)}</div>
+        <div class="player-details"><div class="player-name">${profile.name}<span class="player-position">${position}</span></div><div class="player-stack">${fmt(p.stack)}</div><div class="player-type ${typeColor(profile.type)}">${profile.type}</div></div>
+        <div class="player-cards">${cards}</div>
+        <span class="player-turn">${p.folded ? "FOLDED" : p.allIn ? "ALL-IN" : isTurn ? "ACTING" : winner ? "WINNER" : " "}</span>
       </div>`;
     }).join("");
     const minTarget = hand.round ? hand.round.currentBet + hand.round.lastFullRaise : 10;
     const maxTarget = meRound() ? meRound().streetContribution + meRound().stack : 2000;
     const raiseAction = actions.includes("raise") ? "raise" : actions.includes("bet") ? "bet" : null;
     const actionButtons = ["fold","check","call","bet","raise","all-in"].filter(a => actions.includes(a)).map(a => {
-      const label = a === "all-in" ? "All-in" : a[0].toUpperCase() + a.slice(1);
-      return `<button class="arena-action ${a === "fold" ? "fold-action" : a === "all-in" ? "allin-action" : "primary-action"}" data-arena-action="${a}">${label}${a === "call" ? " " + fmt(toCall()) : ""}</button>`;
+      const label = a === "all-in" ? "All-In" : a === "call" ? `Call ${fmt(toCall())}` : a === "raise" ? "Raise" : a[0].toUpperCase()+a.slice(1);
+      const symbol = a === "fold" ? "×" : a === "call" ? "↪" : a === "all-in" ? "▤" : a === "raise" || a === "bet" ? "↑" : "✓";
+      return `<button class="arena-action ${a === "fold" ? "fold-action" : a === "call" ? "call-action" : a === "all-in" ? "allin-action" : "primary-action"}" data-arena-action="${a}"><span>${symbol}</span>${label}</button>`;
     }).join("");
+    const currentPosition = positionNames[(0 - buttonIndex + profiles.length) % profiles.length];
+    const context = userTurn
+      ? `You're in the ${currentPosition === "SB" ? "small blind" : currentPosition === "BB" ? "big blind" : currentPosition} with ${hand.street === "preflop" ? "a hand to play preflop" : "a decision on this board"}. Consider the action, pot odds and opponent tendencies.`
+      : hand.status === "complete" ? (lastResult || "Hand complete. Review the action history.") : notice;
     root.innerHTML = `
-      <div class="arena-wrap">
+      <div class="arena-wrap arena-redesign">
         <div class="arena-head">
-          <div><a class="back-link" href="#home" data-go="home">← BACK TO HOME</a><p class="eyebrow">LIVE PRACTICE TABLE</p><h1>Practice Arena</h1><p class="muted">Six-max No-Limit Hold’em · Blinds 5 / 10 · 200 BB effective stacks</p></div>
-          <div class="arena-head-actions"><span class="practice-tag">PRACTICE MODE</span><button class="secondary-button" id="arena-new-hand">New hand ↻</button></div>
+          <div><a class="back-link" href="#home" data-go="home">← BACK TO HOME</a><p class="eyebrow">LIVE PRACTICE TABLE</p><h1>Practice Arena</h1><p class="muted">6-Max No-Limit Hold’em&nbsp; · &nbsp;Blinds 5 / 10&nbsp; · &nbsp;200 BB Effective Stacks</p></div>
+          <div class="arena-head-actions"><span class="practice-tag">♧ GAME MODE</span><button class="secondary-button" id="arena-new-hand">New hand ↻</button></div>
         </div>
-        <div class="arena-layout">
-          <section class="arena-table-panel">
-            <div class="table-meta"><span>HAND #${handNo}</span><span>${hand.street.toUpperCase()}</span><span>BUTTON · ${profiles[buttonIndex].name}</span></div>
-            <div class="poker-table">
-              <div class="table-pot"><small>CURRENT POT</small><strong>${fmt(pot)}</strong></div>
-              <div class="community-cards">${hand.board.length ? hand.board.map(c => `<span class="playing-card">${cardLabel(c)}</span>`).join("") : '<span class="board-placeholder">COMMUNITY CARDS</span>'}</div>
-              <div class="table-board-label">${hand.board.length}/5 COMMUNITY CARDS</div>
+        <div class="arena-redesign-grid">
+          <section class="arena-main-column">
+            <div class="arena-table-panel redesigned-table-panel">
+              <div class="table-meta"><span>HAND #${handNo}</span><span>${hand.street.toUpperCase()}</span><span>BUTTON · ${profiles[buttonIndex].name}</span></div>
+              <div class="arena-oval-table">
+                <div class="oval-pot"><small>CURRENT POT</small><strong>${fmt(pot)}</strong></div>
+                <div class="oval-community-label">COMMUNITY CARDS</div>
+                <div class="oval-community">${community || '<span class="empty-board-card">♠</span><span class="empty-board-card">♠</span><span class="empty-board-card">♠</span><span class="empty-board-card">♠</span><span class="empty-board-card">♠</span>'}</div>
+                <div class="oval-board-count">${hand.board.length} / 5 COMMUNITY CARDS</div>
+                ${seats}
+              </div>
+              <div class="arena-notice"><span class="live-dot"></span><span>${notice}</span></div>
+              <div class="arena-history"><div class="history-heading"><span>HAND HISTORY</span><span>${actionHistory.length} actions</span></div><div class="history-list">${actionHistory.slice(-12).map(item => `<div class="history-item"><small>${item.street}</small><span>${item.text}</span></div>`).join("") || '<span class="muted">Actions will appear here.</span>'}</div></div>
             </div>
-            <div class="arena-seats">${players}</div>
-            <div class="arena-notice"><span class="live-dot"></span><span>${notice}</span></div>
-            <div class="arena-history"><div class="history-heading"><span>HAND HISTORY</span><span>${actionHistory.length} actions</span></div><div class="history-list">${actionHistory.slice(-12).map(item => `<div class="history-item"><small>${item.street}</small><span>${item.text}</span></div>`).join("") || '<span class="muted">Actions will appear here.</span>'}</div></div>
-            <div class="arena-controls">
-              <div class="controls-heading"><div><p class="eyebrow">YOUR DECISION</p><h3>${userTurn ? "Action on you" : hand.status === "complete" ? "Hand complete" : "Waiting for action"}</h3></div><span class="muted">${userTurn ? "Choose your move" : "Opponent actions are simulated"}</span></div>
+            <div class="arena-controls redesigned-controls">
+              <div class="controls-heading"><div><p class="eyebrow">YOUR DECISION</p><h3>${userTurn ? "Your Decision?" : hand.status === "complete" ? "Hand complete" : "Waiting for action"}</h3><p class="muted">${userTurn ? "Choose the best action for this situation." : "Opponent actions are simulated practice heuristics."}</p></div><span class="decision-clock">${userTurn ? "●" : "Ⅱ"}</span></div>
               ${userTurn ? `
-                ${raiseAction ? `<label class="raise-control">Bet / raise to (total street contribution)<input id="arena-raise-to" type="number" min="${minTarget}" max="${maxTarget}" step="1" value="${Math.min(maxTarget, minTarget)}"><small>Minimum ${fmt(minTarget)} · Maximum ${fmt(maxTarget)}</small></label>` : ""}
+                ${raiseAction ? `<label class="raise-control">Raise to (total street contribution)<input id="arena-raise-to" type="number" min="${minTarget}" max="${maxTarget}" step="1" value="${Math.min(maxTarget, Math.max(minTarget, hand.round.currentBet + hand.round.lastFullRaise))}"><small>Minimum ${fmt(minTarget)} · Maximum ${fmt(maxTarget)}</small></label>` : ""}
                 <div class="arena-action-row">${actionButtons}</div>
-              ` : hand.status === "complete" ? `<div class="result-banner">${lastResult || "Hand settled."}</div><button class="primary-button" id="arena-next-hand">Deal next hand →</button>` : `<div class="waiting-banner">The practice opponents are thinking through the action.</div>`}
+              ` : hand.status === "complete" ? `<div class="result-banner">${lastResult || "Hand settled."}</div><button class="primary-button" id="arena-next-hand">Deal next hand →</button>` : `<div class="waiting-banner">${notice}</div>`}
             </div>
           </section>
-          <aside class="arena-side">
-            <div class="arena-side-card"><p class="eyebrow">TABLE PROFILE</p><h3>Practice opponents</h3>
-              <div class="opponent-line"><span class="opponent-dot red-dot"></span><div><b>Dev</b><small>Aggressive · pressure and raises</small></div></div>
-              <div class="opponent-line"><span class="opponent-dot blue-dot"></span><div><b>Maya</b><small>Tight · selective participation</small></div></div>
-              <div class="opponent-line"><span class="opponent-dot green-dot"></span><div><b>Arjun</b><small>Calling station · wider calls</small></div></div>
-              <div class="opponent-line"><span class="opponent-dot neutral-dot"></span><div><b>Riya & Kabir</b><small>Balanced and loose profiles</small></div></div>
+          <aside class="arena-redesign-sidebar">
+            <div class="arena-side-card hand-summary-card"><div class="sidebar-card-heading"><h3>Hand #${handNo}</h3><div><button id="arena-prev-hand" disabled>‹</button><button id="arena-next-history" disabled>›</button></div></div>
+              <div class="your-hand-line"><b>Your Hand</b><div class="your-hole-cards">${holeCards}</div></div>
+              <div class="summary-line"><span>Position</span><b>${currentPosition}</b></div><div class="summary-line"><span>Stage</span><b>${hand.street[0].toUpperCase()+hand.street.slice(1)}</b></div><div class="summary-line"><span>Pot</span><b>${fmt(pot)}</b></div><div class="summary-line"><span>Effective Stack</span><b>${fmt(Math.min(...hand.players.filter(p=>!p.folded&&p.id!=="you").map(p=>p.stack),mePlayer?.stack??0))}</b></div>
             </div>
-            <div class="arena-side-card"><p class="eyebrow">HAND SNAPSHOT</p><div class="snapshot-row"><span>Your stack</span><b>${fmt(me()?.stack ?? 0)}</b></div><div class="snapshot-row"><span>To call</span><b>${fmt(toCall())}</b></div><div class="snapshot-row"><span>Current bet</span><b>${fmt(hand.round?.currentBet ?? 0)}</b></div><div class="snapshot-row"><span>Effective stack</span><b>${fmt(Math.min(...hand.players.filter(p => !p.folded && p.id !== "you").map(p => p.stack), me()?.stack ?? 0))}</b></div></div>
-            <div class="arena-disclaimer">Opponent actions are rule-legal, curated practice heuristics. They are not solver outputs or adaptive AI yet.</div>
+            <div class="arena-side-card"><div class="sidebar-card-heading"><h3>▥ &nbsp;Hand Analysis</h3></div><div class="analysis-copy"><span>Hand strength</span><b>${hand.board.length ? "Evaluate against the board" : "Preflop hand"}</b></div><div class="analysis-copy"><span>Pot odds</span><b>${toCall() ? (toCall()/(pot+toCall()*2)*100).toFixed(1)+"% required to call" : "No call facing you"}</b></div><p class="analysis-note">No fabricated equity or solver percentages. Use the visible cards, action and price to assess the spot.</p></div>
+            <div class="arena-side-card key-context-card"><div class="sidebar-card-heading"><h3>ⓘ &nbsp;Key Context</h3></div><p>${context}</p></div>
+            <div class="arena-side-card opponents-card"><div class="sidebar-card-heading"><h3>At this table</h3></div>${profiles.slice(1).map(p=>`<div class="opponent-line"><span class="opponent-dot ${typeColor(p.type)==="red"?"red-dot":typeColor(p.type)==="blue"?"blue-dot":typeColor(p.type)==="green"?"green-dot":"neutral-dot"}"></span><div><b>${p.name}</b><small>${p.type}</small></div></div>`).join("")}</div>
           </aside>
         </div>
       </div>`;
