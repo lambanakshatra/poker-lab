@@ -29,3 +29,22 @@ test("question IDs are unique and answers point to valid options", () => {
 test("question bank target is 1,000 items per category", () => {
   assert.equal(BANK_TARGET_PER_CATEGORY, 1000);
 });
+
+import { handScenarios } from "../../src/hand-scenarios.js";
+
+test("street-by-street scenarios contain four ordered decisions", () => {
+  assert.ok(handScenarios.length >= 3);
+  for (const hand of handScenarios) {
+    assert.equal(hand.steps.length, 4, `Expected four streets in ${hand.id}`);
+    assert.ok(hand.title && hand.setup && hand.villain);
+    for (const [index, step] of hand.steps.entries()) {
+      assert.ok(step.street && step.prompt && step.why && step.exploit, `Incomplete step ${hand.id}:${index}`);
+      assert.ok(Array.isArray(step.options) && step.options.length >= 2);
+      assert.ok(Number.isInteger(step.answer) && step.answer >= 0 && step.answer < step.options.length);
+    }
+  }
+});
+
+test("scenario IDs are unique", () => {
+  assert.equal(new Set(handScenarios.map(hand => hand.id)).size, handScenarios.length);
+});
