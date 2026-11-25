@@ -157,7 +157,8 @@ export function advanceStreet(hand) {
 
 export function settleShowdown(hand) {
   if(hand.status!=="in_progress" || hand.street!=="showdown") throw new Error("Hand is not ready for showdown");
-  returnUncalledExcess(hand);\n  const contenders=hand.players.filter(p=>!p.folded);
+  returnUncalledExcess(hand);
+  const contenders=hand.players.filter(p=>!p.folded);
   if(contenders.length===1) {
     const winner=contenders[0]; winner.stack+=hand.pot;
     hand.result={winnerIds:[winner.id],payouts:{[winner.id]:hand.pot},reason:"everyone_folded"};
