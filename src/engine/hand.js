@@ -107,7 +107,7 @@ export function advanceStreet(hand) {
   assertUniqueCards([...hand.board,...hand.players.flatMap(p=>p.holeCards)]);
   for(const p of hand.players) p.streetContribution=0;
   hand.street=next;
-  const firstToAct=nextActive(hand,hand.buttonIndex);
+  const button=hand.players[hand.buttonIndex];\n  const firstToAct=hand.players.length===2 && !button.folded && !button.allIn && button.stack>0\n    ? button.id\n    : nextActive(hand,hand.buttonIndex);
   if(!firstToAct) {
     hand.round={complete:true,pending:[],currentPlayer:null};
   } else {
