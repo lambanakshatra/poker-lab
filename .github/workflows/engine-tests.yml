@@ -12,5 +12,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: node --check src/app.js && node --check src/arena.js
+      - run: node --check src/app.js && node --check src/arena.js && node --check src/question-bank.js && node --check src/question-bank-ui.js
       - run: npm test
