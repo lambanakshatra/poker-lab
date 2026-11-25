@@ -130,3 +130,20 @@ test("unmatched big blind excess is returned before an all-fold award",()=>{
  assert.equal(h.pot,0);
  assert.equal(h.players.reduce((n,p)=>n+p.stack,0),300);
 });
+
+test("integrated three-player all-in settles main and side pots",()=>{
+ let h=startHand({players:[{id:"A",stack:50},{id:"B",stack:100},{id:"C",stack:150}],buttonId:"A",smallBlind:5,bigBlind:10,deck:orderedDeck});
+ ({hand:h}=applyHandAction(h,"A","all-in"));
+ ({hand:h}=applyHandAction(h,"B","call"));
+ ({hand:h}=applyHandAction(h,"C","all-in"));
+ ({hand:h}=applyHandAction(h,"B","all-in"));
+ assert.equal(h.round.complete,true);
+ h=advanceStreet(h);
+ assert.equal(h.street,"showdown");
+ const result=settleShowdown(h);
+ assert.equal(result.settlements.length,3);
+ assert.deepEqual(result.settlements.map(p=>p.amount),[150,100,50]);
+ assert.deepEqual(result.payouts,{B:250,C:50});
+ assert.equal(h.pot,0);
+ assert.equal(h.players.reduce((n,p)=>n+p.stack,0),300);
+});
