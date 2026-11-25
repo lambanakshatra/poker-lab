@@ -45,6 +45,7 @@ test("single short all-in raise does not reopen action", () => {
   assert.equal(s.currentPlayer,"C");
   ({state:s}=act(s,"C","call"));
   assert.equal(legalActions(s,"A").includes("raise"),false);
+  assert.equal(legalActions(s,"A").includes("all-in"),false);
 });
 
 test("cumulative short all-ins reaching a full raise reopen action", () => {
