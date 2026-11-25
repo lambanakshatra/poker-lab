@@ -21,15 +21,40 @@ export function mountArena(root) {
   let buttonIndex = 5;
   let lastResult = "";
   let notice = "Your first hand is ready. Choose an action when it is your turn.";
+  const stacks = Object.fromEntries(profiles.map(p => [p.id, p.stack]));
+  const actionHistory = [];
+  const positionNames = ["BTN", "SB", "BB", "UTG", "HJ", "CO"];
 
   const newHand = () => {
-    const seats = profiles.map(p => ({ id:p.id, stack:p.stack }));
+    // Practice-table rebuys are explicit: busted seats return to their starting stack
+    // only when a new hand is dealt, while all surviving stacks carry over.
+    const rebought = [];
+    for (const p of profiles) {
+      if (stacks[p.id] <= 0) { stacks[p.id] = p.stack; rebought.push(p.name); }
+    }
+    const seats = profiles.map(p => ({ id:p.id, stack:stacks[p.id] }));
     hand = startHand({ players:seats, buttonId:profiles[buttonIndex].id, smallBlind:5, bigBlind:10 });
+    actionHistory.length = 0;
+    actionHistory.push({street:"PRE-FLOP", text:`Hand #${handNo} dealt · blinds 5/10`});
     lastResult = "";
-    notice = "New hand dealt. Opponent cards stay hidden until showdown.";
+    notice = rebought.length ? `New hand dealt. Practice rebuy: ${rebought.join(", ")}.` : "New hand dealt. Stacks carry over; opponent cards stay hidden until showdown.";
     runOpponents();
+    syncStacks();
     render();
   };
+
+  function syncStacks() {
+    if (!hand) return;
+    for (const p of hand.players) stacks[p.id] = p.stack;
+  }
+
+  function recordAction(id, action, target = null) {
+    const name = profiles.find(p => p.id === id)?.name ?? id;
+    const detail = action === "fold" ? "folds" : action === "check" ? "checks" :
+      action === "call" ? "calls" : action === "all-in" ? "moves all-in" :
+      action === "bet" || action === "raise" ? `${action}s to ${fmt(target)}` : action;
+    actionHistory.push({street:hand.street.toUpperCase(), text:`${name} ${detail}`});
+  }
 
   const current = () => hand?.round?.currentPlayer;
   const me = () => hand?.players.find(p => p.id === "you");
@@ -63,6 +88,8 @@ export function mountArena(root) {
     if (action === "raise") target = Math.min(rp.streetContribution + rp.stack, hand.round.currentBet + hand.round.lastFullRaise);
     if ((action === "bet" || action === "raise") && target > rp.streetContribution + rp.stack) action = "call";
     applyHandAction(hand, id, action, target);
+    recordAction(id, action, target);
+    syncStacks();
     notice = `${profiles.find(x => x.id === id)?.name} ${action === "all-in" ? "moves all-in" : action + (target ? " to " + fmt(target) : "")}.`;
   }
 
@@ -73,6 +100,8 @@ export function mountArena(root) {
         settleShowdown(hand);
         const winners = hand.result.winnerIds.map(id => profiles.find(p => p.id === id)?.name ?? id).join(", ");
         lastResult = `Hand complete · Winner: ${winners}`;
+        actionHistory.push({street:"SHOWDOWN",text:lastResult});
+        syncStacks();
         notice = lastResult;
         break;
       }
@@ -111,6 +140,8 @@ export function mountArena(root) {
     }
     try {
       applyHandAction(hand, "you", action, target);
+      recordAction("you", action, target);
+      syncStacks();
       notice = action === "fold" ? "You folded." : action === "check" ? "You checked." : action === "call" ? "You called." : `You chose ${action}.`;
       progress();
     } catch (error) {
@@ -132,8 +163,11 @@ export function mountArena(root) {
       const isTurn = current() === p.id && hand.status === "in_progress";
       const reveal = hand.result?.reason === "showdown";
       const cards = reveal || isYou ? p.holeCards.map(cardLabel).join(" ") : "▰ ▰";
+      const position = positionNames[(i - buttonIndex + profiles.length) % profiles.length];
+      const positionTag = position === "SB" || position === "BB" || position === "BTN" ? position : "";
       return `<div class="arena-seat ${isYou ? "is-you" : ""} ${isTurn ? "is-turn" : ""} ${p.folded ? "is-folded" : ""} ${winner ? "is-winner" : ""}">
         <div class="seat-top"><strong>${profile.name}</strong><span class="seat-type ${typeColor(profile.type)}">${profile.type}</span></div>
+        <div class="seat-position">${positionTag || position}</div>
         <div class="seat-cards">${cards}</div>
         <div class="seat-stack">Stack <b> ${fmt(p.stack)}</b></div>
         <div class="seat-state">${p.folded ? "FOLDED" : p.allIn ? "ALL-IN" : isTurn ? "ACTING" : winner ? "WINNER" : "IN HAND"}</div>
@@ -162,6 +196,7 @@ export function mountArena(root) {
             </div>
             <div class="arena-seats">${players}</div>
             <div class="arena-notice"><span class="live-dot"></span><span>${notice}</span></div>
+            <div class="arena-history"><div class="history-heading"><span>HAND HISTORY</span><span>${actionHistory.length} actions</span></div><div class="history-list">${actionHistory.slice(-12).map(item => `<div class="history-item"><small>${item.street}</small><span>${item.text}</span></div>`).join("") || '<span class="muted">Actions will appear here.</span>'}</div></div>
             <div class="arena-controls">
               <div class="controls-heading"><div><p class="eyebrow">YOUR DECISION</p><h3>${userTurn ? "Action on you" : hand.status === "complete" ? "Hand complete" : "Waiting for action"}</h3></div><span class="muted">${userTurn ? "Choose your move" : "Opponent actions are simulated"}</span></div>
               ${userTurn ? `
