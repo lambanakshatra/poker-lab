@@ -34,7 +34,6 @@ export function returnUncalledExcess(hand) {
   const ranked=[...hand.players].sort((a,b)=>b.committed-a.committed);
   if(ranked.length<2 || ranked[0].committed===ranked[1].committed) return null;
   const player=ranked[0];
-  if(player.folded) throw new Error("A folded player cannot receive an uncalled bet return");
   const amount=player.committed-ranked[1].committed;
   player.committed-=amount;
   player.stack+=amount;
