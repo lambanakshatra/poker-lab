@@ -29,6 +29,21 @@ const post = (p, amount) => {
   return paid;
 };
 
+/** Return a unique unmatched top contribution before awarding or settling the pot. */
+export function returnUncalledExcess(hand) {
+  const ranked=[...hand.players].sort((a,b)=>b.committed-a.committed);
+  if(ranked.length<2 || ranked[0].committed===ranked[1].committed) return null;
+  const player=ranked[0];
+  if(player.folded) throw new Error("A folded player cannot receive an uncalled bet return");
+  const amount=player.committed-ranked[1].committed;
+  player.committed-=amount;
+  player.stack+=amount;
+  player.streetContribution=Math.max(0,player.streetContribution-amount);
+  hand.pot-=amount;
+  hand.history.push({type:"uncalled_bet_returned",playerId:player.id,amount,pot:hand.pot});
+  return {playerId:player.id,amount};
+}
+
 export function startHand({ players, buttonId, smallBlind, bigBlind, deck = makeDeck() }) {
   if (!Array.isArray(players) || players.length<2 || players.length>9) throw new Error("A table needs 2–9 players");
   if (!validChips(smallBlind) || !validChips(bigBlind) || smallBlind<1 || bigBlind<smallBlind) throw new Error("Invalid blind amounts");
@@ -142,7 +157,7 @@ export function advanceStreet(hand) {
 
 export function settleShowdown(hand) {
   if(hand.status!=="in_progress" || hand.street!=="showdown") throw new Error("Hand is not ready for showdown");
-  const contenders=hand.players.filter(p=>!p.folded);
+  returnUncalledExcess(hand);\n  const contenders=hand.players.filter(p=>!p.folded);
   if(contenders.length===1) {
     const winner=contenders[0]; winner.stack+=hand.pot;
     hand.result={winnerIds:[winner.id],payouts:{[winner.id]:hand.pot},reason:"everyone_folded"};
