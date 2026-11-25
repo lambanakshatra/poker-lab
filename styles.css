@@ -77,3 +77,34 @@
 .bank-mode.active{background:#1b2918;border-color:#405936;color:var(--green)}
 .bank-mode.active span{color:var(--green)}
 @media(max-width:600px){.bank-mode-switch{width:100%}.bank-mode{flex:1;padding:8px 5px;font-size:8px}}
+
+
+/* Sequential hand simulation runner */
+.bank-header-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}
+.scenario-wrap{max-width:1120px;margin:auto}
+.scenario-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:20px}
+.scenario-back{display:block;background:none;border:0;padding:0;margin-bottom:20px;cursor:pointer}
+.scenario-picker{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.scenario-pick{display:flex;flex-direction:column;gap:7px;text-align:left;padding:15px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text);cursor:pointer}
+.scenario-pick.active{border-color:#607c43;background:#172116}
+.scenario-pick span,.scenario-pick small{font:8px 'DM Mono',monospace;color:#92a08f;letter-spacing:.7px}
+.scenario-pick strong{font-size:12px}.scenario-pick.active strong{color:var(--green)}
+.scenario-panel{padding:22px;border:1px solid var(--line);border-radius:13px;background:var(--panel)}
+.scenario-info{display:flex;justify-content:space-between;gap:20px;align-items:start}
+.scenario-info h2{margin:0 0 5px}.scenario-summary{margin-top:10px;color:#a2afa4;font-size:11px;line-height:1.6}
+.scenario-progress{text-align:right;white-space:nowrap}.scenario-progress strong{font:700 25px 'DM Mono',monospace;color:var(--green)}.scenario-progress strong span{font-size:13px;color:#7e8b80}.scenario-progress small{display:block;font:8px 'DM Mono',monospace;color:#859187;letter-spacing:1px}
+.scenario-track{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:20px 0}
+.scenario-track-step{display:flex;align-items:center;gap:7px;padding:8px;border-bottom:2px solid #29332c;color:#718075}
+.scenario-track-step span{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#202a23;font:9px 'DM Mono',monospace}
+.scenario-track-step small{font:8px 'DM Mono',monospace;letter-spacing:.6px}
+.scenario-track-step.current{border-color:var(--green);color:var(--green)}.scenario-track-step.current span,.scenario-track-step.passed span{background:#293a20;color:var(--green)}.scenario-track-step.passed{border-color:#526d3a;color:#a6c68b}
+.scenario-table{border:1px solid #344137;border-radius:10px;background:radial-gradient(ellipse at center,#193023,#0d1711);padding:14px 16px;margin-bottom:16px}
+.scenario-table-top{display:flex;justify-content:space-between;color:#819285;font:8px 'DM Mono',monospace;letter-spacing:1px}
+.scenario-snapshot{display:grid;grid-template-columns:1fr 1fr 2fr;gap:12px;margin-top:15px}
+.scenario-snapshot div{min-width:0}.scenario-snapshot small,.scenario-snapshot strong{display:block}.scenario-snapshot small{font:8px 'DM Mono',monospace;color:#8da08f;letter-spacing:.8px;margin-bottom:7px}.scenario-snapshot strong{font:600 13px 'DM Mono',monospace;color:#eff6ed;overflow-wrap:anywhere}.scenario-snapshot i{font:9px Manrope;color:#9aaa9d}
+.scenario-question{border:1px solid #344137;background:#0e1511;border-radius:11px;padding:20px}
+.scenario-question h3{font-size:17px;line-height:1.5;margin:15px 0}
+.scenario-actions{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:18px}
+.scenario-actions .muted{font-size:9px}
+.primary-button:disabled{opacity:.35;cursor:not-allowed}
+@media(max-width:700px){.bank-header{align-items:start;flex-direction:column}.bank-header-actions{width:100%;justify-content:space-between}.bank-header-actions .primary-button{flex:1}.scenario-head{align-items:start;flex-direction:column}.scenario-head .practice-tag{align-self:flex-start}.scenario-panel{padding:14px}.scenario-info{gap:10px}.scenario-snapshot{grid-template-columns:1fr 1fr}.scenario-snapshot div:last-child{grid-column:1/-1}.scenario-track-step{padding:7px 3px;gap:4px;flex-direction:column;align-items:flex-start}.scenario-track-step small{font-size:7px}.scenario-question{padding:14px}.scenario-actions{align-items:stretch;flex-direction:column}.scenario-actions .primary-button{width:100%}}
