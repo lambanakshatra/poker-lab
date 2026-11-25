@@ -3,7 +3,8 @@ import assert from "node:assert/strict";
 import { BANK_TARGET_PER_CATEGORY, categories, questions } from "../../src/question-bank.js";
 import { questionBatch02 } from "../../src/question-bank-batch-02.js";
 import { questionBatch03 } from "../../src/question-bank-batch-03.js";
-const allQuestions = [...questions, ...questionBatch02, ...questionBatch03];
+import { questionBatch04 } from "../../src/question-bank-batch-04.js";
+const allQuestions = [...questions, ...questionBatch02, ...questionBatch03, ...questionBatch04];
 
 test("question bank defines all 15 planned categories", () => {
   assert.equal(categories.length, 15);
