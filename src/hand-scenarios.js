@@ -1,0 +1,41 @@
+export const handScenarios = [
+  {
+    id: "btn-aqo-01",
+    title: "Button pressure with A-Q",
+    level: "Beginner",
+    setup: "Six-max 5/10 cash · 100 BB effective · no unusual reads",
+    villain: "Big blind: unknown, assumed to defend a reasonable range",
+    steps: [
+      {street:"Preflop", board:"—", pot:"15", prompt:"It folds to you on the button with A♠ Q♦. What is the baseline action?",options:["Open-raise","Limp","Fold"],answer:0,why:"Open-raise. A-Q offsuit is a strong button open. Raising takes initiative and can win the blinds immediately while building a pot with a hand that performs well in position.",exploit:"If the blinds are unusually aggressive 3-bettors, you can adjust your opening size or defend strategy. Do not limp by default."},
+      {street:"Flop",board:"Q♣ 8♦ 3♠",pot:"65",prompt:"You raise to 25 and the big blind calls. The flop pot is 55 (blinds included); BB checks. You have top pair/top kicker. What is a sound plan?",options:["Bet a modest size for value/protection","Check every time","Overbet all-in"],answer:0,why:"A modest bet can get called by worse queens, pocket pairs and some backdoor holdings while denying equity. Checking some hands is reasonable, but checking every time gives up value.",exploit:"Against a sticky caller, favour value and avoid thin bluffs. Against a check-raiser who is very value-heavy, protect your checking range and respond carefully."},
+      {street:"Turn",board:"Q♣ 8♦ 3♠ 6♥",pot:"85",prompt:"You bet 30 and get called. The turn is a low blank 6♥. The opponent checks. What is the best default thought?",options:["Choose a second value bet based on worse calls and sizing","Barrel because you must represent strength","Give up because you were called"],answer:0,why:"The blank does not obviously complete draws. Top pair/top kicker can often continue for value, but choose a size that worse hands can call. The exact frequency depends on ranges and opponent.",exploit:"Against a calling station, a larger value size may be profitable. Against a tight player who continues only with strong hands, checking back more can control the pot."},
+      {street:"River",board:"Q♣ 8♦ 3♠ 6♥ 2♣",pot:"145",prompt:"You bet 55 on the turn and get called. River 2♣; opponent checks. What should decide whether you value bet again?",options:["Whether enough worse hands reach river and call this size","The fact that you have already bet twice","The fear of being bluffed if you check"],answer:0,why:"A river value bet needs worse hands to call often enough. Consider the opponent's flop and turn calling range, the runout, and the size you choose. Checking back can be correct if worse calls are scarce.",exploit:"Versus a calling station, thin value becomes more attractive. Versus a tight opponent whose range is now mostly Qx or better, choose a smaller size or check."}
+    ]
+  },
+  {
+    id: "co-99-02",
+    title: "Pocket nines facing pressure",
+    level: "Intermediate",
+    setup: "Six-max 5/10 cash · 150 BB effective · cutoff open",
+    villain: "Button: active 3-bettor; no reliable postflop read yet",
+    steps: [
+      {street:"Preflop",board:"—",pot:"15",prompt:"You are in the cutoff with 9♠ 9♦. It folds to you. What is the standard action?",options:["Open-raise","Fold","Limp"],answer:0,why:"Pocket nines are a clear open from the cutoff. The hand has meaningful showdown value and can make strong sets.",exploit:"If the button is 3-betting very frequently, anticipate that before opening; do not automatically fold a playable hand."},
+      {street:"Preflop response",board:"—",pot:"70",prompt:"You open to 25. The button 3-bets to 70; blinds fold. What should guide your response?",options:["Call or 4-bet based on sizing, positions, 3-bet range and playability","Always 4-bet to avoid a flop","Fold because any 3-bet is premium"],answer:0,why:"Pocket nines can often continue by calling in position with deep stacks, depending on the 3-bet size and opponent range. A 4-bet is not automatic and can isolate you against stronger hands.",exploit:"Against a proven wide 3-bettor, continue wider and consider selective 4-bets. Against a tight player, fold more often."},
+      {street:"Flop",board:"J♣ 7♦ 2♠",pot:"150",prompt:"You call. Flop J♣ 7♦ 2♠. Villain bets 45. What is the disciplined baseline?",options:["Evaluate price and range; a call can be reasonable against a small c-bet","Raise all-in","Fold every time"],answer:0,why:"You have an underpair to the jack but beat unpaired bluffs and some smaller pairs. The small sizing offers a price; position and opponent c-bet tendencies matter. Avoid treating this as an automatic call.",exploit:"Against a high-frequency small c-bettor, defend more. Against a player who rarely bluffs, fold more of these bluff-catchers."},
+      {street:"Turn",board:"J♣ 7♦ 2♠ K♥",pot:"240",prompt:"You call the flop. Turn K♥; villain bets 150. What is the key adjustment?",options:["Recognise the second barrel and king favour some of villain's range; continue only if enough bluffs remain","Call because you already called flop","Raise because the king is scary"],answer:0,why:"The king is a high card that can improve the preflop raiser's perceived range. A large second barrel narrows the opponent's range. Without evidence of frequent double barrels as bluffs, folding can be best.",exploit:"If this opponent barrels too aggressively, defend with selected bluff-catchers. Do not generalise from one observed hand."}
+    ]
+  },
+  {
+    id: "bb-kj-03",
+    title: "Big blind defence and a missed draw",
+    level: "Intermediate",
+    setup: "Six-max 5/10 cash · 100 BB effective · button vs big blind",
+    villain: "Button: competent, capable of c-betting and delayed bluffs",
+    steps: [
+      {street:"Preflop",board:"—",pot:"15",prompt:"Button opens to 25. You are in the big blind with K♠ J♠. What is a reasonable baseline?",options:["Defend; calling is commonly reasonable","Fold every time","3-bet all-in"],answer:0,why:"KJs is a playable suited broadway hand with reasonable postflop playability and a price from the big blind. Calling is a common baseline; mixing 3-bets can depend on ranges and sizing.",exploit:"Against a button who opens too wide and folds to 3-bets, add selected 3-bets. Against a strong postflop player, avoid bloating pots with dominated holdings."},
+      {street:"Flop",board:"J♦ 8♠ 4♣",pot:"55",prompt:"You check, button bets 18. You have top pair with a king kicker. What is the default?",options:["Call and keep weaker hands and bluffs in","Fold top pair","Raise every time"],answer:0,why:"Calling keeps the opponent's bluffs and weaker value hands in while controlling pot size. Raising can be used selectively, but is not mandatory with a medium-strength one-pair hand.",exploit:"Against a player who over-c-bets and gives up, calling can induce further bluffs. Against a passive player who bets only strong hands, reassess."},
+      {street:"Turn",board:"J♦ 8♠ 4♣ 2♥",pot:"91",prompt:"You check-call the flop. Turn 2♥; you check and button checks back. What does this check-back suggest?",options:["It caps nothing with certainty; update a range that includes pot-control and give-ups","Villain definitely has a missed draw","Villain definitely has a jack"],answer:0,why:"A turn check-back can contain showdown-value hands, pot-control, traps and hands that abandoned a bluff. It updates the range but does not reveal one exact holding.",exploit:"Against players who give up too often, lead some rivers for thin value. Against players who trap, avoid assuming every check is weakness."},
+      {street:"River",board:"J♦ 8♠ 4♣ 2♥ 6♣",pot:"91",prompt:"River 6♣; you check. Button bets 60. What should you do with one pair?",options:["Compare your hand to the betting range and required equity before bluff-catching","Call because your opponent checked turn","Raise as a bluff"],answer:0,why:"The river bet after a turn check can be a delayed bluff or thin/value bet. You need the price and a range estimate. With no read or exact combo information, neither automatic call nor fold is justified.",exploit:"Call more against opponents who turn missed draws into bluffs; fold more against opponents whose river bets are under-bluffed."}
+    ]
+  }
+];
