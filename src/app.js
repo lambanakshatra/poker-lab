@@ -8,27 +8,45 @@ const pageCopy = {
   playbook: ["My Playbook", "Build a personal strategy reference.", "Your notes and strategy library will be added to the connected training workspace."]
 };
 
-function navigate(page) {
-  const content = document.querySelector("#page-content");
-  const crumb = document.querySelector("#page-crumb");
-  if (!content || !crumb) return;
-  document.querySelectorAll("[data-page]").forEach(link => link.classList.toggle("active", link.dataset.page === page));
+const contentRoot = document.querySelector("#page-content");
+const crumb = document.querySelector("#page-crumb");
+const homeMarkup = contentRoot?.innerHTML ?? "";
+
+function renderPage(page) {
+  if (!contentRoot || !crumb) return;
+  document.querySelectorAll("[data-page]").forEach(link => {
+    link.classList.toggle("active", link.dataset.page === page);
+  });
+
   if (page === "home" || !pageCopy[page]) {
-    location.hash = "home";
+    contentRoot.innerHTML = homeMarkup;
     crumb.textContent = "HOME";
-    renderHome();
+    document.querySelectorAll("[data-page]").forEach(link => {
+      link.classList.toggle("active", link.dataset.page === "home");
+    });
     return;
   }
-  location.hash = page;
+
   const [title, intro, status] = pageCopy[page];
   crumb.textContent = title.toUpperCase();
-  content.innerHTML = `<div class="module-page"><a class="back-link" href="#home" data-go="home">← BACK TO HOME</a><p class="eyebrow">POKER LAB MODULE</p><h1>${title}</h1><p class="muted">${intro}</p><div class="module-panel"><div class="card-kicker green-kicker">INTEGRATION STATUS</div><h3>Module setup in progress</h3><p>${status}</p><p>This module will live inside this same Poker Lab application. No separate website or account is required.</p></div></div>`;
+  contentRoot.innerHTML = `<div class="module-page">
+    <a class="back-link" href="#home" data-go="home">← BACK TO HOME</a>
+    <p class="eyebrow">POKER LAB MODULE</p>
+    <h1>${title}</h1>
+    <p class="muted">${intro}</p>
+    <div class="module-panel">
+      <div class="card-kicker green-kicker">INTEGRATION STATUS</div>
+      <h3>Module setup in progress</h3>
+      <p>${status}</p>
+      <p>This module will live inside this same Poker Lab application. No separate website or account is required.</p>
+    </div>
+  </div>`;
 }
 
-function renderHome() {
-  // Keep the initial dashboard markup intact by reloading the single app route.
-  if (location.hash && location.hash !== "#home") location.hash = "home";
-  window.location.reload();
+function navigate(page) {
+  const next = pageCopy[page] ? page : "home";
+  if (location.hash !== `#${next}`) history.pushState({ page: next }, "", `#${next}`);
+  renderPage(next);
 }
 
 document.addEventListener("click", event => {
@@ -38,5 +56,8 @@ document.addEventListener("click", event => {
   navigate(target.dataset.go || target.dataset.page);
 });
 
-const initial = location.hash.replace("#", "") || "home";
-if (initial !== "home" && pageCopy[initial]) navigate(initial);
+window.addEventListener("popstate", () => {
+  renderPage(location.hash.slice(1) || "home");
+});
+
+renderPage(location.hash.slice(1) || "home");
