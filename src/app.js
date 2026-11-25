@@ -1,5 +1,5 @@
 import { mountArena } from "./arena.js";
-import { mountQuestionBank } from "./question-bank-ui.js";
+import { mountBoardPractice } from "./board-practice.js";
 
 const pageCopy = {
   coaching: ["30-Session Coaching", "A structured path from preflop fundamentals to advanced hand reviews.", "The curriculum is planned. Interactive lessons will be connected after the poker engine validation is complete."],
@@ -23,7 +23,7 @@ function renderPage(page) {
 
   if (page === "puzzles") {
     crumb.textContent = "QUESTION BANK";
-    mountQuestionBank(contentRoot);
+    mountBoardPractice(contentRoot, () => navigate("home"));
     return;
   }
 
