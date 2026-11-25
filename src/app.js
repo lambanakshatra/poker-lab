@@ -1,3 +1,5 @@
+import { mountArena } from "./arena.js";
+
 const pageCopy = {
   coaching: ["30-Session Coaching", "A structured path from preflop fundamentals to advanced hand reviews.", "The curriculum is planned. Interactive lessons will be connected after the poker engine validation is complete."],
   puzzles: ["Daily Puzzles", "Practice one decision at a time.", "Puzzle scenarios and answer analysis are being prepared for the training workspace."],
@@ -17,6 +19,12 @@ function renderPage(page) {
   document.querySelectorAll("[data-page]").forEach(link => {
     link.classList.toggle("active", link.dataset.page === page);
   });
+
+  if (page === "arena") {
+    crumb.textContent = "PRACTICE ARENA";
+    mountArena(contentRoot);
+    return;
+  }
 
   if (page === "home" || !pageCopy[page]) {
     contentRoot.innerHTML = homeMarkup;
