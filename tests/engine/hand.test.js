@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { startHand, applyHandAction, advanceStreet, settleShowdown } from "../../src/engine/hand.js";
+import { startHand, applyHandAction, advanceStreet, settleShowdown, returnUncalledExcess } from "../../src/engine/hand.js";
 
 const orderedDeck=["As","Kd","Qh","Jc","Ts","9d","8h","7c","6s","5d","4h","3c","2s","Ah","Ad","Ac","Kh","Kc","Ks","Qd","Qc","Qs","Jh","Jd","Js","Th","Td","Tc","9h","9c","9s","8d","8c","8s","7h","7d","7s","6h","6d","6c","5h","5c","5s","4d","4c","4s","3h","3d","3s","2h","2d","2c"];
 
@@ -75,4 +75,27 @@ test("multiway all-in automatically runs out the board to showdown",()=>{
  const total=h.players.reduce((n,p)=>n+p.stack,0)+h.pot;
  settleShowdown(h);
  assert.equal(h.players.reduce((n,p)=>n+p.stack,0),total);
+});
+
+test("uncalled excess is returned and excluded from the pot",()=>{
+ const h={pot:300,players:[
+  {id:"A",stack:0,committed:150,streetContribution:50,folded:false},
+  {id:"B",stack:0,committed:100,streetContribution:40,folded:false},
+  {id:"C",stack:0,committed:50,streetContribution:10,folded:true}
+ ],history:[]};
+ const result=returnUncalledExcess(h);
+ assert.deepEqual(result,{playerId:"A",amount:50});
+ assert.equal(h.players[0].stack,50);
+ assert.equal(h.players[0].committed,100);
+ assert.equal(h.pot,250);
+});
+test("a folded bettor can receive their unmatched excess back",()=>{
+ const h={pot:250,players:[
+  {id:"A",stack:0,committed:150,streetContribution:50,folded:true},
+  {id:"B",stack:0,committed:100,streetContribution:40,folded:false}
+ ],history:[]};
+ const result=returnUncalledExcess(h);
+ assert.deepEqual(result,{playerId:"A",amount:50});
+ assert.equal(h.players[0].stack,50);
+ assert.equal(h.pot,200);
 });
