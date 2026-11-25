@@ -1,4 +1,4 @@
-export const BANK_TARGET_PER_CATEGORY = 1000;
+export const BANK_TARGET_PER_CATEGORY = 200;
 
 export const categories = [
   {id:"starting-hands",name:"Starting Hands",group:"Preflop",description:"Choose which hands to enter with and understand hand strength."},
