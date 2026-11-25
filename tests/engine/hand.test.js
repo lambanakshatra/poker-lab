@@ -178,3 +178,12 @@ for (const count of [6,8]) {
   assert.equal(h.players.reduce((n,p)=>n+p.stack,0)+h.pot,count*1000);
  });
 }
+
+
+test("default hand setup deals from a shuffled standard deck",()=>{
+ const h=startHand({players:[{id:"A",stack:100},{id:"B",stack:100}],buttonId:"A",smallBlind:5,bigBlind:10});
+ const dealt=[...h.players.flatMap(p=>p.holeCards),...h.deck];
+ assert.equal(dealt.length,52);
+ assert.equal(new Set(dealt).size,52);
+ assert.equal(h.deck.length,48);
+});
