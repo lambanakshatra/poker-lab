@@ -180,7 +180,7 @@ export function mountArena(root) {
         return `<span class="mini-card ${red ? "red" : ""}">${label}</span>`;
       }).join("") : '<span class="mini-card facedown">◆</span><span class="mini-card facedown">◆</span>';
       return `<div class="arena-player player-${i} ${isYou ? "hero-seat" : ""} ${isTurn ? "is-turn" : ""} ${p.folded ? "is-folded" : ""} ${winner ? "is-winner" : ""}">
-        <div class="player-avatar ${typeColor(profile.type)}">${isYou ? "♠" : profile.name.slice(0,1)}</div>
+        <div class="player-avatar ${typeColor(profile.type)}" aria-label="${profile.name} avatar"></div>
         <div class="player-details"><div class="player-name">${profile.name}<span class="player-position">${position}</span></div><div class="player-stack">${fmt(p.stack)}</div><div class="player-type ${typeColor(profile.type)}">${profile.type}</div></div>
         <div class="player-cards">${cards}</div>
         <span class="player-turn">${p.folded ? "FOLDED" : p.allIn ? "ALL-IN" : isTurn ? "ACTING" : winner ? "WINNER" : " "}</span>
@@ -195,6 +195,7 @@ export function mountArena(root) {
       return `<button class="arena-action ${a === "fold" ? "fold-action" : a === "call" ? "call-action" : a === "all-in" ? "allin-action" : "primary-action"}" data-arena-action="${a}"><span>${symbol}</span>${label}</button>`;
     }).join("");
     const currentPosition = positionNames[(0 - buttonIndex + profiles.length) % profiles.length];
+    const callPrice = toCall() ? (toCall()/(pot+toCall())*100) : 0;
     const context = userTurn
       ? `You're in the ${currentPosition === "SB" ? "small blind" : currentPosition === "BB" ? "big blind" : currentPosition} with ${hand.street === "preflop" ? "a hand to play preflop" : "a decision on this board"}. Consider the action, pot odds and opponent tendencies.`
       : hand.status === "complete" ? (lastResult || "Hand complete. Review the action history.") : notice;
@@ -227,11 +228,11 @@ export function mountArena(root) {
             </div>
           </section>
           <aside class="arena-redesign-sidebar">
-            <div class="arena-side-card hand-summary-card"><div class="sidebar-card-heading"><h3>Hand #${handNo}</h3><div><button id="arena-prev-hand" disabled>‹</button><button id="arena-next-history" disabled>›</button></div></div>
+            <div class="arena-side-card hand-summary-card"><div class="sidebar-card-heading"><h3>Hand #${handNo}</h3><span class="hand-live-label">${hand.status === "complete" ? "COMPLETE" : "LIVE"}</span></div>
               <div class="your-hand-line"><b>Your Hand</b><div class="your-hole-cards">${holeCards}</div></div>
               <div class="summary-line"><span>Position</span><b>${currentPosition}</b></div><div class="summary-line"><span>Stage</span><b>${hand.street[0].toUpperCase()+hand.street.slice(1)}</b></div><div class="summary-line"><span>Pot</span><b>${fmt(pot)}</b></div><div class="summary-line"><span>Effective Stack</span><b>${fmt(Math.min(...hand.players.filter(p=>!p.folded&&p.id!=="you").map(p=>p.stack),mePlayer?.stack??0))}</b></div>
             </div>
-            <div class="arena-side-card"><div class="sidebar-card-heading"><h3>▥ &nbsp;Hand Analysis</h3></div><div class="analysis-copy"><span>Hand strength</span><b>${hand.board.length ? "Evaluate against the board" : "Preflop hand"}</b></div><div class="analysis-copy"><span>Pot odds</span><b>${toCall() ? (toCall()/(pot+toCall()*2)*100).toFixed(1)+"% required to call" : "No call facing you"}</b></div><p class="analysis-note">No fabricated equity or solver percentages. Use the visible cards, action and price to assess the spot.</p></div>
+            <div class="arena-side-card"><div class="sidebar-card-heading"><h3>▥ &nbsp;Hand Analysis</h3></div><div class="analysis-copy"><span>Decision context</span><b>${hand.street === "preflop" ? "Preflop range and position" : "Board texture and ranges"}</b></div><div class="analysis-copy"><span>Equity required to call</span><b>${toCall() ? callPrice.toFixed(1)+"%" : "No call facing you"}</b></div><p class="analysis-note">${toCall() ? "Call "+fmt(toCall())+" to contest "+fmt(pot+toCall())+". This is the break-even equity before rake." : "No call price is currently facing you. Assess position, ranges and the action sequence."} No solver equity is being invented.</p></div>
             <div class="arena-side-card key-context-card"><div class="sidebar-card-heading"><h3>ⓘ &nbsp;Key Context</h3></div><p>${context}</p></div>
             <div class="arena-side-card opponents-card"><div class="sidebar-card-heading"><h3>At this table</h3></div>${profiles.slice(1).map(p=>`<div class="opponent-line"><span class="opponent-dot ${typeColor(p.type)==="red"?"red-dot":typeColor(p.type)==="blue"?"blue-dot":typeColor(p.type)==="green"?"green-dot":"neutral-dot"}"></span><div><b>${p.name}</b><small>${p.type}</small></div></div>`).join("")}</div>
           </aside>
