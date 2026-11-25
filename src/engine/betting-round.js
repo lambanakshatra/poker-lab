@@ -32,7 +32,8 @@ export function createBettingRound({ players, firstToAct, street = "preflop", cu
     };
   });
   if (!ids.has(firstToAct)) throw new Error("firstToAct must be a player");
-  const pending = normalized.filter(p => active(p) && p.id !== firstToAct).map(p=>p.id);
+  if (normalized.some(p => p.streetContribution > currentBet)) throw new Error("currentBet cannot be below a player's street contribution");
+  const pending = normalized.filter(p => active(p) && p.id !== firstToAct).map(p => p.id);
   const state = { street, players: normalized, currentBet, minRaise, pending: [], currentPlayer: null, complete: false, lastFullRaise: minRaise };
   const starter = find(state, firstToAct);
   if (active(starter)) state.pending = [firstToAct, ...pending];
@@ -47,13 +48,14 @@ export function legalActions(state, playerId = state.currentPlayer) {
   const p = find(state, playerId);
   if (!active(p)) return [];
   const toCall = Math.max(0, state.currentBet - p.streetContribution);
+  const opponentsCanRespond = state.players.some(q => q.id !== p.id && !q.folded && !q.allIn && q.stack > 0);
   const actions = ["fold"];
   if (toCall === 0) actions.push("check");
   else actions.push("call");
-  const others = state.players.filter(q => q.id !== p.id && !q.folded);
-  const canRaise = others.some(q => !q.allIn && q.stack > 0) &&
-    (p.actedAtBet === null || state.currentBet - p.actedAtBet >= state.lastFullRaise);
-  if (canRaise && p.stack > toCall) actions.push("raise");
+  if (opponentsCanRespond) {
+    if (state.currentBet === 0 && p.stack >= state.lastFullRaise) actions.push("bet");
+    if (state.currentBet > 0 && p.stack > toCall && p.streetContribution + p.stack >= state.currentBet + state.lastFullRaise) actions.push("raise");
+  }
   if (p.stack > 0) actions.push("all-in");
   return actions;
 }
@@ -84,15 +86,20 @@ export function act(state, playerId, action, raiseTo = null) {
     if (p.stack === 0) p.allIn = true;
   }
   if (action === "bet" || action === "raise") {
-    if (!Number.isSafeInteger(raiseTo) || raiseTo <= oldBet || raiseTo <= p.streetContribution) throw new Error("raiseTo must be a total street contribution above current bet");
+    const opening = action === "bet";
+    if (!Number.isSafeInteger(raiseTo) || raiseTo <= oldBet || raiseTo <= p.streetContribution) {
+      throw new Error("Target contribution must be above the current bet");
+    }
     const desired = raiseTo - p.streetContribution;
-    paid = Math.min(p.stack, desired);
+    if (desired > p.stack) throw new Error("Use all-in when the target exceeds the player's stack");
+    if (desired < state.lastFullRaise) throw new Error("Bet is below the minimum opening bet");
+    if (!opening && raiseTo < oldBet + state.lastFullRaise) throw new Error("Raise is below the minimum raise-to amount");
+    paid = desired;
     p.stack -= paid; p.streetContribution += paid;
-    if (p.stack === 0) p.allIn = true;
     const newBet = p.streetContribution;
     const raiseSize = newBet - oldBet;
     if (raiseSize >= state.lastFullRaise) state.lastFullRaise = raiseSize;
-    state.currentBet = Math.max(oldBet, newBet);
+    state.currentBet = newBet;
   }
   if (action === "all-in") {
     paid = p.stack;
@@ -109,8 +116,9 @@ export function act(state, playerId, action, raiseTo = null) {
   state.pending = state.pending.filter(id => id !== playerId);
 
   const remaining = state.players.filter(q => !q.folded);
-  if (remaining.length <= 1 || remaining.filter(active).length <= 1 &&
-      remaining.every(q => q.allIn || q.folded || q.streetContribution === state.currentBet)) {
+  const live = remaining.filter(active);
+  if (remaining.length <= 1 || (live.length <= 1 &&
+      remaining.every(q => q.allIn || q.folded || q.streetContribution === state.currentBet))) {
     state.pending = []; state.complete = true; state.currentPlayer = null;
     return { state, paid, roundComplete: true };
   }
@@ -120,7 +128,6 @@ export function act(state, playerId, action, raiseTo = null) {
     state.pending = state.players
       .filter(q => q.id !== playerId && active(q) && q.streetContribution < state.currentBet)
       .map(q => q.id);
-    // Players who have not acted still retain their turn even when already matched.
     for (const q of state.players) {
       if (q.id !== playerId && active(q) && !q.acted && !state.pending.includes(q.id)) state.pending.push(q.id);
     }
