@@ -26,7 +26,7 @@ test("rejects an undersized non-all-in opening bet and raise", () => {
   let s=createBettingRound({players:[{id:"A",stack:100},{id:"B",stack:100}],firstToAct:"A",minRaise:10});
   assert.throws(()=>act(s,"A","bet",5),/Illegal action/);
   ({state:s}=act(s,"A","bet",10));
-  assert.throws(()=>act(s,"B","raise",15),/Illegal action/);
+  assert.throws(()=>act(s,"B","raise",15),/minimum raise-to amount/);
 });
 
 test("full raise reopens action for players who already acted", () => {
