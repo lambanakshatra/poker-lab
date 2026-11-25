@@ -19,7 +19,6 @@ The home dashboard follows the approved Poker Lab design reference: a dark premi
 
 ## Game profile
 
-Initial training defaults:
 - No-Limit Texas Hold'em cash games
 - Blinds: 5/10
 - Typical effective stack: 100–200 BB
@@ -36,34 +35,43 @@ Initial training defaults:
 6. Do not judge a decision solely by whether the hand won or lost.
 7. Validate hand rankings, betting-round action order, short all-in raise reopening, side pots, and split-pot payouts with automated tests.
 
-## Current implementation status
+## Repository status
 
-This repository is the source-of-truth scaffold. The latest Cloudflare Pages engine preview exists separately and its original source has not yet been recovered into this repository. Do not treat this README as evidence that all listed modules are already implemented or validated.
+The repository now contains initial, independently written engine modules:
+- Five-card hand ranking and best-five-of-seven evaluation.
+- Duplicate-card validation.
+- Contribution-layer side-pot construction.
+- Side-pot eligibility and split-payout helpers.
+- Node test-runner regression tests for those modules.
 
-### Known preview
+These modules are a new, reviewable foundation. They are **not yet recovered from or proven identical to the deployed Cloudflare preview**.
+
+## Known preview
 
 - Cloudflare Pages project: `poker-lab-engine`
 - Preview: https://dba740ee.poker-lab-engine.pages.dev
 - This preview is not the original production project.
 
-## Planned repository structure
+## Project layout
 
 ```text
 poker-lab/
 ├── README.md
+├── package.json
 ├── docs/
 │   ├── PRODUCT_SPEC.md
 │   ├── ENGINE_RULES.md
 │   └── VALIDATION_PLAN.md
-├── src/
-│   ├── app/
-│   ├── engine/
-│   ├── coaching/
-│   ├── puzzles/
-│   ├── reviews/
-│   └── analytics/
-└── tests/
-    └── engine/
+├── src/engine/
+│   ├── cards.js
+│   └── pots.js
+└── tests/engine/
+    ├── cards.test.js
+    └── pots.test.js
 ```
 
-The source tree will be populated as recoverable implementation code is added and tested.
+Run the current test suite with `npm test` on Node.js 20 or newer.
+
+## Current limitations
+
+The full browser application, betting-round state machine, opponent logic, dashboard, coaching pages, and persistence layer still need to be reconstructed and integrated. The original source for the current Pages preview is not exposed by the connected Pages deployment APIs. Do not treat the preview as source-backed or claim full application validation until the code is recovered or rebuilt and tested.
