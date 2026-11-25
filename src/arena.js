@@ -111,7 +111,7 @@ export function mountArena(root) {
     }
     try {
       applyHandAction(hand, "you", action, target);
-      notice = action === "fold" ? "You folded." : action === "check" ? "You checked." : action === "call" ? `You called ${fmt(toCall())}.` : `You chose ${action}.`;
+      notice = action === "fold" ? "You folded." : action === "check" ? "You checked." : action === "call" ? "You called." : `You chose ${action}.`;
       progress();
     } catch (error) {
       notice = error.message;
@@ -130,7 +130,8 @@ export function mountArena(root) {
       const isYou = p.id === "you";
       const winner = hand.result?.winnerIds?.includes(p.id);
       const isTurn = current() === p.id && hand.status === "in_progress";
-      const cards = hand.status === "complete" ? p.holeCards.map(cardLabel).join(" ") : isYou ? p.holeCards.map(cardLabel).join(" ") : "▰ ▰";
+      const reveal = hand.result?.reason === "showdown";
+      const cards = reveal || isYou ? p.holeCards.map(cardLabel).join(" ") : "▰ ▰";
       return `<div class="arena-seat ${isYou ? "is-you" : ""} ${isTurn ? "is-turn" : ""} ${p.folded ? "is-folded" : ""} ${winner ? "is-winner" : ""}">
         <div class="seat-top"><strong>${profile.name}</strong><span class="seat-type ${typeColor(profile.type)}">${profile.type}</span></div>
         <div class="seat-cards">${cards}</div>
