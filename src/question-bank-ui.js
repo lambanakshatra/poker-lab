@@ -109,4 +109,8 @@ export function mountQuestionBank(root) {
     });
   }
   render();
+  const header = root.querySelector(".bank-header");
+  if (header && !header.querySelector("[data-go=\"scenarios\"]")) {
+    header.insertAdjacentHTML("beforeend", `<a class="primary-button scenario-launch" href="#scenarios" data-go="scenarios">Street-by-street scenarios →</a>`);
+  }
 }

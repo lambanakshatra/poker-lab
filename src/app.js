@@ -1,7 +1,9 @@
 import { mountArena } from "./arena.js";
 import { mountQuestionBank } from "./question-bank-ui.js";
+import { mountScenarioLab } from "./scenario-ui.js";
 
 const pageCopy = {
+  scenarios: ["Street-by-Street Lab", "Play connected hands from preflop through the river.", "Make each decision before the next street is revealed."],
   coaching: ["30-Session Coaching", "A structured path from preflop fundamentals to advanced hand reviews.", "The curriculum is planned. Interactive lessons will be connected after the poker engine validation is complete."],
   puzzles: ["Question Bank", "Build skill through thousands of structured poker decisions.", "The question bank is now active with an initial set of reviewed practice questions across 15 categories."],
   arena: ["Practice Arena", "Play realistic No-Limit Hold’em hands.", "The table interface will be connected to the validated hand engine before live practice is enabled."],
@@ -24,6 +26,12 @@ function renderPage(page) {
   if (page === "puzzles") {
     crumb.textContent = "QUESTION BANK";
     mountQuestionBank(contentRoot);
+    return;
+  }
+
+  if (page === "scenarios") {
+    crumb.textContent = "STREET-BY-STREET LAB";
+    mountScenarioLab(contentRoot);
     return;
   }
 
@@ -59,7 +67,7 @@ function renderPage(page) {
 }
 
 function navigate(page) {
-  const next = pageCopy[page] ? page : "home";
+  const next = (pageCopy[page] || page === "scenarios") ? page : "home";
   if (location.hash !== `#${next}`) history.pushState({ page: next }, "", `#${next}`);
   renderPage(next);
 }
