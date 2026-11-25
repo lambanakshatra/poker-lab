@@ -1,4 +1,6 @@
 import { categories, questions, BANK_TARGET_PER_CATEGORY } from "./question-bank.js";
+import { questionBatch02 } from "./question-bank-batch-02.js";
+const allQuestions = [...questions, ...questionBatch02];
 
 const progressKey = "poker-lab-question-progress-v1";
 
@@ -14,7 +16,7 @@ export function mountQuestionBank(root) {
   let submitted = false;
   let progress = loadProgress();
 
-  const categoryQuestions = () => questions.filter(q => q.categoryId === selectedCategory);
+  const categoryQuestions = () => allQuestions.filter(q => q.categoryId === selectedCategory);
   const currentQuestion = () => categoryQuestions()[questionIndex % Math.max(1, categoryQuestions().length)];
   const stats = id => {
     const entries = progress[id] || {};
@@ -34,7 +36,7 @@ export function mountQuestionBank(root) {
       <div class="bank-wrap">
         <div class="bank-header">
           <div><a class="back-link" href="#home" data-go="home">← BACK TO HOME</a><p class="eyebrow">YOUR PRACTICE LIBRARY</p><h1>Question Bank</h1><p class="muted">Choose a topic, make a decision, then study the solution.</p></div>
-          <div class="bank-total"><strong>${questions.length.toLocaleString("en-IN")}</strong><span>published practice items</span><small>15 categories · target 1,000 each</small></div>
+          <div class="bank-total"><strong>${allQuestions.length.toLocaleString("en-IN")}</strong><span>published practice items</span><small>15 categories · target 1,000 each</small></div>
         </div>
         <div class="bank-layout">
           <aside class="bank-categories">
