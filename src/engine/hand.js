@@ -77,10 +77,12 @@ export function startHand({ players, buttonId, smallBlind, bigBlind, deck = make
     board:[],deck:deckCopy,street:"preflop",pot:table.reduce((n,p)=>n+p.committed,0),
     status:"in_progress",round:null,history:[],result:null
   };
-  hand.round=createBettingRound({
-    players:table.map(p=>({id:p.id,stack:p.stack,streetContribution:p.streetContribution,folded:p.folded,allIn:p.allIn})),
-    firstToAct,currentBet,minRaise:bigBlind,street:"preflop"
-  });
+  hand.round=firstToAct
+    ? createBettingRound({
+        players:table.map(p=>({id:p.id,stack:p.stack,streetContribution:p.streetContribution,folded:p.folded,allIn:p.allIn})),
+        firstToAct,currentBet,minRaise:bigBlind,street:"preflop"
+      })
+    : {street:"preflop",players:table.map(p=>({id:p.id,stack:p.stack,streetContribution:p.streetContribution,folded:p.folded,allIn:p.allIn,actedAtBet:null,acted:false})),currentBet,minRaise:bigBlind,lastFullRaise:bigBlind,pending:[],currentPlayer:null,complete:true};
   hand.history.push({type:"hand_started",street:"preflop",buttonId,blindPaid});
   return hand;
 }
