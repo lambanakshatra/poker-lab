@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { BANK_TARGET_PER_CATEGORY, categories, questions } from "../../src/question-bank.js";
+import { questionBatch02 } from "../../src/question-bank-batch-02.js";
+const allQuestions = [...questions, ...questionBatch02];
 
 test("question bank defines all 15 planned categories", () => {
   assert.equal(categories.length, 15);
@@ -9,13 +11,13 @@ test("question bank defines all 15 planned categories", () => {
 
 test("every category has an initial published practice item", () => {
   for (const category of categories) {
-    assert.ok(questions.some(q => q.categoryId === category.id), `Missing questions for ${category.id}`);
+    assert.ok(allQuestions.some(q => q.categoryId === category.id), `Missing questions for ${category.id}`);
   }
 });
 
 test("question IDs are unique and answers point to valid options", () => {
   assert.equal(new Set(questions.map(q => q.id)).size, questions.length);
-  for (const q of questions) {
+  for (const q of allQuestions) {
     assert.ok(q.prompt && q.context && q.explanation, `Incomplete question ${q.id}`);
     assert.ok(Array.isArray(q.options) && q.options.length >= 2, `Missing options ${q.id}`);
     assert.ok(Number.isInteger(q.answer) && q.answer >= 0 && q.answer < q.options.length, `Invalid answer ${q.id}`);
