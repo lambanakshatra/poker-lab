@@ -143,7 +143,7 @@ test("integrated three-player all-in settles main and side pots",()=>{
  const result=settleShowdown(h);
  assert.equal(result.settlements.length,2);
  assert.deepEqual(result.settlements.map(p=>p.amount),[150,100]);
- assert.deepEqual(result.payouts,{B:250});
+ assert.deepEqual(result.payouts,{A:150,B:50,C:50});
  assert.equal(h.pot,0);
  assert.equal(h.players.reduce((n,p)=>n+p.stack,0),300);
 });
