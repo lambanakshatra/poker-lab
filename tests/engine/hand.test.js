@@ -147,3 +147,19 @@ test("integrated three-player all-in settles main and side pots",()=>{
  assert.equal(h.pot,0);
  assert.equal(h.players.reduce((n,p)=>n+p.stack,0),300);
 });
+
+
+test("heads-up short blinds that put both players all-in auto-run to showdown",()=>{
+ let h=startHand({players:[{id:"A",stack:3},{id:"B",stack:6}],buttonId:"A",smallBlind:5,bigBlind:10,deck:orderedDeck});
+ assert.equal(h.round.complete,true);
+ assert.equal(h.round.currentPlayer,null);
+ assert.equal(h.pot,9);
+ h=advanceStreet(h);
+ assert.equal(h.street,"showdown");
+ assert.equal(h.board.length,5);
+ const total=h.players.reduce((n,p)=>n+p.stack,0)+h.pot;
+ settleShowdown(h);
+ assert.equal(h.status,"complete");
+ assert.equal(h.pot,0);
+ assert.equal(h.players.reduce((n,p)=>n+p.stack,0),total);
+});
