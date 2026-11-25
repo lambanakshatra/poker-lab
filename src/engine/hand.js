@@ -58,10 +58,13 @@ export function startHand({ players, buttonId, smallBlind, bigBlind, deck = make
   assertUniqueCards(deck);
   const deckCopy=[...deck];
   const draw=()=>deckCopy.shift();
-  for(let round=0;round<2;round++) {
-    for(const id of clockwise(table,buttonIndex,()=>true)) table.find(p=>p.id===id).holeCards.push(draw());
-  }
   const headsUp=table.length===2;
+  const dealOrder=headsUp
+    ? [buttonId,...clockwise(table,buttonIndex,()=>true).filter(id=>id!==buttonId)]
+    : clockwise(table,buttonIndex,()=>true);
+  for(let round=0;round<2;round++) {
+    for(const id of dealOrder) table.find(p=>p.id===id).holeCards.push(draw());
+  }
   const sbIndex=headsUp?buttonIndex:(buttonIndex+1)%table.length;
   const bbIndex=(sbIndex+1)%table.length;
   const sb=table[sbIndex], bb=table[bbIndex];
