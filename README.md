@@ -4,12 +4,12 @@ A personal Texas Hold'em training lab focused on realistic decision practice, st
 
 ## Product direction
 
-The home dashboard follows the approved Poker Lab design reference: a dark premium interface, neon green primary accent, and purposeful blue/red highlights.
+One unified application with a dark premium interface, neon-green primary accent, and purposeful blue/red highlights.
 
 ### Core modules
 
 - **Home** — learning progress, next lesson, daily puzzle, skill profile, and shortcuts.
-- **30-Session Coaching** — structured progression from fundamentals to advanced play. Coaching sessions begin after core engine validation is complete.
+- **30-Session Coaching** — structured progression from fundamentals to advanced play. Coaching sessions begin after core engine validation and integration.
 - **Daily Puzzles** — realistic poker decision scenarios with explanations.
 - **Practice Arena** — multiway cash-game practice with configurable opponent profiles.
 - **Hand Reviews** — review decisions street by street, separating decision quality from hand outcome.
@@ -28,50 +28,35 @@ The home dashboard follows the approved Poker Lab design reference: a dark premi
 ## Engineering principles
 
 1. Preserve existing features when changing the UI.
-2. Do not deploy to the original production project until the replacement has been verified.
-3. Keep the Poker Lab application and data isolated from Poker Night Manager.
+2. Keep preview deployments separate from production; production remains disabled during development.
+3. Keep Poker Lab isolated from Poker Night Manager.
 4. Never present heuristic opponent actions as solver output.
 5. Never claim equity, EV, or win-rate figures unless actually computed.
 6. Do not judge a decision solely by whether the hand won or lost.
 7. Validate hand rankings, betting-round action order, short all-in raise reopening, side pots, and split-pot payouts with automated tests.
 
-## Repository status
+## Current implementation status
 
-The repository now contains initial, independently written engine modules:
-- Five-card hand ranking and best-five-of-seven evaluation.
-- Duplicate-card validation.
-- Contribution-layer side-pot construction.
-- Side-pot eligibility and split-payout helpers.
-- Node test-runner regression tests for those modules.
+- Core card evaluation, secure shuffled deck, betting-round state machine, hand lifecycle, side-pot construction, and settlement modules are implemented.
+- Engine regression suite currently passes in GitHub Actions.
+- The unified responsive dashboard shell is in development on `app/unified-poker-lab-v2`.
+- Training modules, persistence, and full browser-level validation remain in progress. The shell's module placeholders should not be mistaken for completed features.
 
-These modules are a new, reviewable foundation. They are **not yet recovered from or proven identical to the deployed Cloudflare preview**.
+## Preview workflow
 
-## Known preview
-
-- Cloudflare Pages project: `poker-lab-engine`
-- Preview: https://dba740ee.poker-lab-engine.pages.dev
-- This preview is not the original production project.
+Cloudflare Pages preview deployments are enabled for branches. Production deployments are explicitly disabled while the unified application is being built and verified. Preview builds use the existing `poker-lab` Pages project; they do not replace the production deployment.
 
 ## Project layout
 
 ```text
 poker-lab/
-├── README.md
+├── index.html
+├── styles.css
 ├── package.json
-├── docs/
-│   ├── PRODUCT_SPEC.md
-│   ├── ENGINE_RULES.md
-│   └── VALIDATION_PLAN.md
-├── src/engine/
-│   ├── cards.js
-│   └── pots.js
-└── tests/engine/
-    ├── cards.test.js
-    └── pots.test.js
+├── src/
+│   ├── app.js
+│   └── engine/
+└── tests/
 ```
 
 Run the current test suite with `npm test` on Node.js 20 or newer.
-
-## Current limitations
-
-The full browser application, betting-round state machine, opponent logic, dashboard, coaching pages, and persistence layer still need to be reconstructed and integrated. The original source for the current Pages preview is not exposed by the connected Pages deployment APIs. Do not treat the preview as source-backed or claim full application validation until the code is recovered or rebuilt and tested.
