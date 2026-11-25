@@ -1,5 +1,6 @@
 import { categories, BANK_TARGET_PER_CATEGORY } from "./question-bank.js";
 import { boardSpotsBatch02 } from "./board-practice-batch-02.js";
+import { boardSpotsBatch03 } from "./board-practice-batch-03.js";
 
 export const boardSpots = [
 {id:"bsh-01",categoryId:"starting-hands",level:"Beginner",street:"PREFLOP",hero:["As","Kd"],board:[],position:"Button",pot:15,stack:1000,opponent:"Folds to you",action:"Action folds to you.",question:"What is your best baseline action?",options:["Open-raise","Limp","Fold"],answer:0,why:"A-K offsuit is a strong button opening hand. Raise to build the pot and take initiative."},
@@ -29,7 +30,7 @@ function cardMarkup(code, hidden=false) {
 export function mountBoardPractice(root, onBack) {
  let category="starting-hands", index=0, choice=null, revealed=false;
  let attempts=JSON.parse(localStorage.getItem("poker-lab-board-progress-v1")||"{}");
- const spots=[...boardSpots,...boardSpotsBatch02];
+ const spots=[...boardSpots,...boardSpotsBatch02,...boardSpotsBatch03];
  const filtered=()=>spots.filter(x=>x.categoryId===category);
  const render=()=>{
   const list=filtered(), q=list[index%list.length]||spots[0];
