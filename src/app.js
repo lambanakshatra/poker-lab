@@ -1,8 +1,9 @@
 import { mountArena } from "./arena.js";
+import { mountQuestionBank } from "./question-bank-ui.js";
 
 const pageCopy = {
   coaching: ["30-Session Coaching", "A structured path from preflop fundamentals to advanced hand reviews.", "The curriculum is planned. Interactive lessons will be connected after the poker engine validation is complete."],
-  puzzles: ["Daily Puzzles", "Practice one decision at a time.", "Puzzle scenarios and answer analysis are being prepared for the training workspace."],
+  puzzles: ["Question Bank", "Build skill through thousands of structured poker decisions.", "The question bank is now active with an initial set of reviewed practice questions across 15 categories."],
   arena: ["Practice Arena", "Play realistic No-Limit Hold’em hands.", "The table interface will be connected to the validated hand engine before live practice is enabled."],
   reviews: ["Hand Reviews", "Understand the decisions behind every street.", "Hand replay, action history and coaching feedback are being integrated."],
   performance: ["My Performance", "Measure decision quality, not just results.", "Performance tracking will be enabled once hands and coaching feedback are saved to your account."],
@@ -19,6 +20,12 @@ function renderPage(page) {
   document.querySelectorAll("[data-page]").forEach(link => {
     link.classList.toggle("active", link.dataset.page === page);
   });
+
+  if (page === "puzzles") {
+    crumb.textContent = "QUESTION BANK";
+    mountQuestionBank(contentRoot);
+    return;
+  }
 
   if (page === "arena") {
     crumb.textContent = "PRACTICE ARENA";
