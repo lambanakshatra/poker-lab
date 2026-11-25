@@ -12,5 +12,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: node --check src/app.js && node --check src/arena.js && node --check src/question-bank.js && node --check src/question-bank-batch-02.js && node --check src/question-bank-batch-03.js && node --check src/question-bank-batch-04.js && node --check src/question-bank-batch-05.js && node --check src/question-bank-ui.js && node --check src/board-practice.js && node --check src/scenario-runner.js
+      - run: node --check src/app.js && node --check src/arena.js && node --check src/question-bank.js && node --check src/question-bank-batch-02.js && node --check src/question-bank-batch-03.js && node --check src/question-bank-batch-04.js && node --check src/question-bank-batch-05.js && node --check src/question-bank-ui.js && node --check src/board-practice.js && node --check src/board-practice-batch-02.js && node --check src/scenario-runner.js
       - run: npm test
