@@ -77,3 +77,19 @@
 .bank-mode.active{background:#1b2918;border-color:#405936;color:var(--green)}
 .bank-mode.active span{color:var(--green)}
 @media(max-width:600px){.bank-mode-switch{width:100%}.bank-mode{flex:1;padding:8px 5px;font-size:8px}}
+
+/* Sequential street-by-street hand scenarios */
+.scenario-launch{align-self:center;white-space:nowrap;text-decoration:none}
+.scenario-wrap{max-width:1400px;margin:0 auto;padding:24px}
+.scenario-layout{display:grid;grid-template-columns:240px minmax(0,1fr);gap:18px}
+.scenario-list,.scenario-main{min-width:0}
+.scenario-list{padding:14px;background:#101712;border:1px solid var(--line);border-radius:10px;align-self:start}
+.scenario-streets{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:16px 0}
+.scenario-street{display:flex;align-items:center;gap:9px;padding:10px;border:1px solid var(--line);border-radius:8px;background:#101712;color:#aab7aa;cursor:pointer;text-align:left}
+.scenario-street span{width:23px;height:23px;display:grid;place-items:center;border-radius:6px;background:#263129;font:10px 'DM Mono',monospace}
+.scenario-street small{font-size:9px}.scenario-street.active{border-color:#759d4b;background:#192419;color:var(--green)}.scenario-street.done span{background:#36542a;color:#d4f2b3}
+.scenario-street:disabled{opacity:.4;cursor:not-allowed}
+.scenario-state{display:flex;gap:10px;margin:14px 0}.scenario-state>div{min-width:100px;padding:9px 12px;border:1px solid var(--line);border-radius:7px;background:#0e1510}.scenario-state small,.scenario-state strong{display:block}.scenario-state small{font-size:8px;color:var(--muted);margin-bottom:5px}.scenario-state strong{font:12px 'DM Mono',monospace;color:#d8e5d8}
+.scenario-main .solution-panel p+p{margin-top:9px}
+@media(max-width:850px){.scenario-layout{grid-template-columns:1fr}.scenario-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.scenario-list .bank-section-title{grid-column:1/-1}}
+@media(max-width:600px){.scenario-wrap{padding:14px}.scenario-list{grid-template-columns:1fr}.scenario-street{flex-direction:column;align-items:flex-start;gap:5px;padding:8px}.scenario-streets{gap:5px}.scenario-state{flex-wrap:wrap}.scenario-launch{width:100%;text-align:center}}
