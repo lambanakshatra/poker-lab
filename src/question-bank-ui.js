@@ -1,6 +1,7 @@
 import { categories, questions, BANK_TARGET_PER_CATEGORY } from "./question-bank.js";
 import { questionBatch02 } from "./question-bank-batch-02.js";
-const allQuestions = [...questions, ...questionBatch02];
+import { questionBatch03 } from "./question-bank-batch-03.js";
+const allQuestions = [...questions, ...questionBatch02, ...questionBatch03];
 
 const progressKey = "poker-lab-question-progress-v1";
 
