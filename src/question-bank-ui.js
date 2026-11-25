@@ -1,6 +1,7 @@
 import { categories, questions, BANK_TARGET_PER_CATEGORY } from "./question-bank.js";
 import { questionBatch02 } from "./question-bank-batch-02.js";
 import { questionBatch03 } from "./question-bank-batch-03.js";
+import { mountScenarioRunner } from "./scenario-runner.js";
 const allQuestions = [...questions, ...questionBatch02, ...questionBatch03];
 
 const progressKey = "poker-lab-question-progress-v1";
@@ -39,7 +40,7 @@ export function mountQuestionBank(root) {
       <div class="bank-wrap">
         <div class="bank-header">
           <div><a class="back-link" href="#home" data-go="home">← BACK TO HOME</a><p class="eyebrow">YOUR PRACTICE LIBRARY</p><h1>Question Bank</h1><p class="muted">Choose a topic, make a decision, then study the solution.</p></div>
-          <div class="bank-total"><strong>${allQuestions.length.toLocaleString("en-IN")}</strong><span>published practice items</span><small>15 categories · target 1,000 each</small></div>
+          <div class="bank-header-actions"><button class="primary-button" data-open-scenarios>Run complete hand simulations →</button><div class="bank-total"><strong>${allQuestions.length.toLocaleString("en-IN")}</strong><span>published practice items</span><small>15 categories · target 1,000 each</small></div></div>
         </div>
         <div class="bank-layout">
           <aside class="bank-categories">
@@ -84,6 +85,7 @@ export function mountQuestionBank(root) {
           </section>
         </div>
       </div>`;
+    root.querySelector("[data-open-scenarios]")?.addEventListener("click",()=>mountScenarioRunner(root,render));
     root.querySelectorAll("[data-category]").forEach(button=>button.addEventListener("click",()=>{
       selectedCategory=button.dataset.category;questionIndex=0;selectedAnswer=null;submitted=false;mode="all";render();
     }));
