@@ -1,8 +1,9 @@
 import { categories, questions, BANK_TARGET_PER_CATEGORY } from "./question-bank.js";
 import { questionBatch02 } from "./question-bank-batch-02.js";
 import { questionBatch03 } from "./question-bank-batch-03.js";
+import { questionBatch04 } from "./question-bank-batch-04.js";
 import { mountScenarioRunner } from "./scenario-runner.js";
-const allQuestions = [...questions, ...questionBatch02, ...questionBatch03];
+const allQuestions = [...questions, ...questionBatch02, ...questionBatch03, ...questionBatch04];
 
 const progressKey = "poker-lab-question-progress-v1";
 
