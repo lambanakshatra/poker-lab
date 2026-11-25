@@ -163,3 +163,18 @@ test("heads-up short blinds that put both players all-in auto-run to showdown",(
  assert.equal(h.pot,0);
  assert.equal(h.players.reduce((n,p)=>n+p.stack,0),total);
 });
+
+
+for (const count of [6,8]) {
+ test(`${count}-handed preflop action begins left of the big blind`,()=>{
+  const players=Array.from({length:count},(_,i)=>({id:String.fromCharCode(65+i),stack:1000}));
+  const h=startHand({players,buttonId:"A",smallBlind:5,bigBlind:10,deck:orderedDeck});
+  assert.equal(h.round.currentPlayer,"D");
+  assert.equal(h.players.find(p=>p.id==="B").streetContribution,5);
+  assert.equal(h.players.find(p=>p.id==="C").streetContribution,10);
+  assert.equal(h.players.every(p=>p.holeCards.length===2),true);
+  const cards=h.players.flatMap(p=>p.holeCards);
+  assert.equal(new Set(cards).size,count*2);
+  assert.equal(h.players.reduce((n,p)=>n+p.stack,0)+h.pot,count*1000);
+ });
+}
