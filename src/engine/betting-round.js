@@ -57,7 +57,7 @@ export function legalActions(state, playerId = state.currentPlayer) {
     if (state.currentBet === 0 && p.stack >= state.lastFullRaise) actions.push("bet");
     if (state.currentBet > 0 && p.stack > toCall && p.streetContribution + p.stack >= state.currentBet + state.lastFullRaise) actions.push("raise");
   }
-  if (p.stack > 0) actions.push("all-in");
+  if (p.stack > 0 && (p.stack <= toCall || raiseReopened)) actions.push("all-in");
   return actions;
 }
 
