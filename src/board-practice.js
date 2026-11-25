@@ -1,4 +1,5 @@
-import { categories } from "./question-bank.js";
+import { categories, BANK_TARGET_PER_CATEGORY } from "./question-bank.js";
+import { boardSpotsBatch02 } from "./board-practice-batch-02.js";
 
 export const boardSpots = [
 {id:"bsh-01",categoryId:"starting-hands",level:"Beginner",street:"PREFLOP",hero:["As","Kd"],board:[],position:"Button",pot:15,stack:1000,opponent:"Folds to you",action:"Action folds to you.",question:"What is your best baseline action?",options:["Open-raise","Limp","Fold"],answer:0,why:"A-K offsuit is a strong button opening hand. Raise to build the pot and take initiative."},
@@ -28,13 +29,13 @@ function cardMarkup(code, hidden=false) {
 export function mountBoardPractice(root, onBack) {
  let category="starting-hands", index=0, choice=null, revealed=false;
  let attempts=JSON.parse(localStorage.getItem("poker-lab-board-progress-v1")||"{}");
- const spots=boardSpots;
+ const spots=[...boardSpots,...boardSpotsBatch02];
  const filtered=()=>spots.filter(x=>x.categoryId===category);
  const render=()=>{
   const list=filtered(), q=list[index%list.length]||spots[0];
   root.innerHTML=`<div class="bank-wrap board-practice">
-   <div class="bank-header"><div><a class="back-link" href="#home" data-back>← BACK TO HOME</a><p class="eyebrow">REAL HAND DECISION TRAINING</p><h1>Board Practice</h1><p class="muted">Your hole cards. The board. The action. Make the decision.</p></div><div class="bank-total"><strong>${spots.length}</strong><span>board-based hand spots</span><small>Initial hands · growing library</small></div></div>
-   <div class="bank-layout"><aside class="bank-categories"><div class="bank-section-title">SPOT TYPES <span>15</span></div>${["Preflop","Postflop","Mathematics","Advanced","Simulations"].map(group=>`<div class="bank-group"><div class="bank-group-title">${group}</div>${categories.filter(c=>c.group===group).map(c=>{const n=spots.filter(s=>s.categoryId===c.id).length;return `<button class="bank-category ${c.id===category?"active":""}" data-category="${c.id}"><span>${c.name}</span><small>${n} board spots</small></button>`}).join("")}</div>`).join("")}</aside>
+   <div class="bank-header"><div><a class="back-link" href="#home" data-back>← BACK TO HOME</a><p class="eyebrow">REAL HAND DECISION TRAINING</p><h1>Board Practice</h1><p class="muted">Your hole cards. The board. The action. Make the decision.</p></div><div class="bank-total"><strong>${spots.length}</strong><span>board-based hand spots</span><small>Target: ${BANK_TARGET_PER_CATEGORY} per category</small></div></div>
+   <div class="bank-layout"><aside class="bank-categories"><div class="bank-section-title">SPOT TYPES <span>15</span></div>${["Preflop","Postflop","Mathematics","Advanced","Simulations"].map(group=>`<div class="bank-group"><div class="bank-group-title">${group}</div>${categories.filter(c=>c.group===group).map(c=>{const n=spots.filter(s=>s.categoryId===c.id).length;return `<button class="bank-category ${c.id===category?"active":""}" data-category="${c.id}"><span>${c.name}</span><small>${n} / ${BANK_TARGET_PER_CATEGORY} spots</small></button>`}).join("")}</div>`).join("")}</aside>
    <section class="bank-main"><div class="bank-category-heading"><div><p class="eyebrow">${q.level} · ${q.street}</p><h2>${categories.find(c=>c.id===category)?.name||"Board Practice"}</h2><p class="muted">Read the actual hand and action before choosing.</p></div><div class="bank-progress"><strong>${index+1}/${list.length}</strong><small>IN THIS CATEGORY</small></div></div>
    <article class="board-spot-card"><div class="board-spot-top"><span>${q.position}</span><span>5 / 10 CASH · ${q.level.toUpperCase()}</span></div>
     <div class="board-spot-table"><div class="board-pot"><small>POT</small><strong>${q.pot}</strong><small>chips</small></div><div class="board-hand-block"><small>YOUR HOLE CARDS</small><div class="board-cards">${q.hero.map(c=>cardMarkup(c)).join("")}</div></div><div class="board-hand-block board-community"><small>COMMUNITY BOARD</small><div class="board-cards">${q.board.length?q.board.map(c=>cardMarkup(c)).join(""):'<span class="board-placeholder">Preflop · no community cards</span>'}</div></div></div>
