@@ -1,11 +1,7 @@
 import { createBettingRound, act } from "./betting-round.js";
 import { assertUniqueCards, compareHands } from "./cards.js";
 import { settleSidePots } from "./pots.js";
-
-const makeDeck = () => {
-  const ranks = "23456789TJQKA", suits = "shdc";
-  return [...ranks].flatMap(r => [...suits].map(s => r + s));
-};
+import { assertStandardDeck, createShuffledDeck } from "./deck.js";
 const validChips = n => Number.isSafeInteger(n) && n >= 0;
 const clockwise = (players, startIndex, predicate) => {
   const out = [];
@@ -43,7 +39,7 @@ export function returnUncalledExcess(hand) {
   return {playerId:player.id,amount};
 }
 
-export function startHand({ players, buttonId, smallBlind, bigBlind, deck = makeDeck() }) {
+export function startHand({ players, buttonId, smallBlind, bigBlind, deck = createShuffledDeck() }) {
   if (!Array.isArray(players) || players.length<2 || players.length>9) throw new Error("A table needs 2–9 players");
   if (!validChips(smallBlind) || !validChips(bigBlind) || smallBlind<1 || bigBlind<smallBlind) throw new Error("Invalid blind amounts");
   const ids=new Set();
@@ -54,7 +50,7 @@ export function startHand({ players, buttonId, smallBlind, bigBlind, deck = make
   });
   const buttonIndex=table.findIndex(p=>p.id===buttonId);
   if(buttonIndex<0) throw new Error("buttonId must identify a seated player");
-  if(!Array.isArray(deck) || deck.length<5+2*table.length) throw new Error("Deck is too short");
+  assertStandardDeck(deck);
   assertUniqueCards(deck);
   const deckCopy=[...deck];
   const draw=()=>deckCopy.shift();

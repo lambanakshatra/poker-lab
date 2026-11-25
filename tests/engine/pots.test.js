@@ -39,7 +39,7 @@ test("three-way all-in distributes main and side pots independently",()=>{
  assert.equal(paid,300);
 });
 test("tied main pot splits and awards odd chip clockwise",()=>{
- const players=[{id:"A",committed:50},{id:"B",committed:50},{id:"C",committed:50}];
+ const players=[{id:"A",committed:51,folded:true},{id:"B",committed:51},{id:"C",committed:51}];
  const result=settleSidePots(players,()=>0,["B","C","A"]);
- assert.deepEqual(result[0].payouts,{B:51,C:50,A:50});
+ assert.deepEqual(result[0].payouts,{B:77,C:76});
 });

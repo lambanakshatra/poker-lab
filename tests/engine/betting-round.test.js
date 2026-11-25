@@ -24,14 +24,14 @@ test("opening action is a bet and updates the minimum raise", () => {
 
 test("rejects an undersized non-all-in opening bet and raise", () => {
   let s=createBettingRound({players:[{id:"A",stack:100},{id:"B",stack:100}],firstToAct:"A",minRaise:10});
-  assert.throws(()=>act(s,"A","bet",5),/Illegal action/);
+  assert.throws(()=>act(s,"A","bet",5),/minimum opening bet/);
   ({state:s}=act(s,"A","bet",10));
   assert.throws(()=>act(s,"B","raise",15),/minimum raise-to amount/);
 });
 
 test("full raise reopens action for players who already acted", () => {
   let s=createBettingRound({players:[{id:"A",stack:500,streetContribution:100},{id:"B",stack:500,streetContribution:100},{id:"C",stack:500,streetContribution:100}],firstToAct:"A",currentBet:100,minRaise:40});
-  ({state:s}=act(s,"A","call"));
+  ({state:s}=act(s,"A","check"));
   ({state:s}=act(s,"B","raise",140));
   assert.equal(s.currentPlayer,"C");
   ({state:s}=act(s,"C","call"));
@@ -40,7 +40,7 @@ test("full raise reopens action for players who already acted", () => {
 
 test("single short all-in raise does not reopen action", () => {
   let s=createBettingRound({players:[{id:"A",stack:500,streetContribution:100},{id:"B",stack:30,streetContribution:100},{id:"C",stack:500,streetContribution:100}],firstToAct:"A",currentBet:100,minRaise:40});
-  ({state:s}=act(s,"A","call"));
+  ({state:s}=act(s,"A","check"));
   ({state:s}=act(s,"B","all-in"));
   assert.equal(s.currentPlayer,"C");
   ({state:s}=act(s,"C","call"));
@@ -50,7 +50,7 @@ test("single short all-in raise does not reopen action", () => {
 
 test("cumulative short all-ins reaching a full raise reopen action", () => {
   let s=createBettingRound({players:[{id:"A",stack:500,streetContribution:100},{id:"B",stack:30,streetContribution:100},{id:"C",stack:40,streetContribution:100},{id:"D",stack:500,streetContribution:100}],firstToAct:"A",currentBet:100,minRaise:40});
-  ({state:s}=act(s,"A","call"));
+  ({state:s}=act(s,"A","check"));
   ({state:s}=act(s,"B","all-in"));
   ({state:s}=act(s,"C","all-in"));
   assert.equal(s.currentPlayer,"D");
