@@ -101,6 +101,7 @@ export function applyHandAction(hand, playerId, action, raiseTo=null) {
     const winner=hand.players.find(p=>!p.folded);
     winner.stack+=hand.pot;
     hand.result={winnerIds:[winner.id],payouts:{[winner.id]:hand.pot},reason:"everyone_folded"};
+    hand.pot=0;
     hand.status="complete";
   }
   return {hand,roundComplete:hand.round.complete};
@@ -172,6 +173,7 @@ export function settleShowdown(hand) {
     for(const [id,amount] of Object.entries(payouts)) hand.players.find(p=>p.id===id).stack+=amount;
     hand.result={settlements,payouts,winnerIds:[...new Set(settlements.flatMap(p=>p.winners))],reason:"showdown"};
   }
+  hand.pot=0;
   hand.status="complete";
   hand.history.push({type:"hand_settled",result:hand.result});
   return hand.result;
