@@ -17,7 +17,7 @@ test("every category has an initial published practice item", () => {
 });
 
 test("question IDs are unique and answers point to valid options", () => {
-  assert.equal(new Set(questions.map(q => q.id)).size, questions.length);
+  assert.equal(new Set(allQuestions.map(q => q.id)).size, allQuestions.length, "Question IDs must be unique across every batch");
   for (const q of allQuestions) {
     assert.ok(q.prompt && q.context && q.explanation, `Incomplete question ${q.id}`);
     assert.ok(Array.isArray(q.options) && q.options.length >= 2, `Missing options ${q.id}`);
