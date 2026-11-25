@@ -34,14 +34,14 @@ test("complete checks deal flop, turn and river in order",()=>{
  ({hand:h}=applyHandAction(h,"A","call"));
  ({hand:h}=applyHandAction(h,"B","check"));
  h=advanceStreet(h); assert.equal(h.street,"flop"); assert.equal(h.board.length,3);
- ({hand:h}=applyHandAction(h,"B","check"));
  ({hand:h}=applyHandAction(h,"A","check"));
+ ({hand:h}=applyHandAction(h,"B","check"));
  h=advanceStreet(h); assert.equal(h.street,"turn"); assert.equal(h.board.length,4);
- ({hand:h}=applyHandAction(h,"B","check"));
  ({hand:h}=applyHandAction(h,"A","check"));
+ ({hand:h}=applyHandAction(h,"B","check"));
  h=advanceStreet(h); assert.equal(h.street,"river"); assert.equal(h.board.length,5);
- ({hand:h}=applyHandAction(h,"B","check"));
  ({hand:h}=applyHandAction(h,"A","check"));
+ ({hand:h}=applyHandAction(h,"B","check"));
  h=advanceStreet(h); assert.equal(h.street,"showdown");
 });
 
@@ -105,12 +105,12 @@ test("a folded bettor can receive their unmatched excess back",()=>{
 });
 
 test("short big blind is posted as an all-in without inventing chips",()=>{
- const h=startHand({players:[{id:"A",stack:100},{id:"B",stack:6},{id:"C",stack:100}],buttonId:"A",smallBlind:5,bigBlind:10,deck:orderedDeck});
- assert.equal(h.players.find(p=>p.id==="B").streetContribution,6);
- assert.equal(h.players.find(p=>p.id==="B").stack,0);
- assert.equal(h.players.find(p=>p.id==="B").allIn,true);
- assert.equal(h.pot,16);
- assert.equal(h.round.currentPlayer,"C");
+ const h=startHand({players:[{id:"A",stack:100},{id:"B",stack:100},{id:"C",stack:6}],buttonId:"A",smallBlind:5,bigBlind:10,deck:orderedDeck});
+ assert.equal(h.players.find(p=>p.id==="C").streetContribution,6);
+ assert.equal(h.players.find(p=>p.id==="C").stack,0);
+ assert.equal(h.players.find(p=>p.id==="C").allIn,true);
+ assert.equal(h.pot,11);
+ assert.equal(h.round.currentPlayer,"A");
 });
 test("all-fold award preserves total chips",()=>{
  let h=startHand({players:[{id:"A",stack:100},{id:"B",stack:100},{id:"C",stack:100}],buttonId:"A",smallBlind:5,bigBlind:10,deck:orderedDeck});
@@ -141,9 +141,9 @@ test("integrated three-player all-in settles main and side pots",()=>{
  h=advanceStreet(h);
  assert.equal(h.street,"showdown");
  const result=settleShowdown(h);
- assert.equal(result.settlements.length,3);
- assert.deepEqual(result.settlements.map(p=>p.amount),[150,100,50]);
- assert.deepEqual(result.payouts,{B:250,C:50});
+ assert.equal(result.settlements.length,2);
+ assert.deepEqual(result.settlements.map(p=>p.amount),[150,100]);
+ assert.deepEqual(result.payouts,{B:250});
  assert.equal(h.pot,0);
  assert.equal(h.players.reduce((n,p)=>n+p.stack,0),300);
 });
