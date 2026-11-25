@@ -106,7 +106,9 @@ export function mountArena(root) {
         break;
       }
       if (hand.round.complete) {
+        const previousStreet = hand.street;
         advanceStreet(hand);
+        if (hand.street !== "showdown") actionHistory.push({street:hand.street.toUpperCase(),text:`${hand.street.toUpperCase()} dealt · ${hand.board.map(cardLabel).join(" ")}`});
         if (hand.street === "showdown") continue;
         notice = `${hand.street.toUpperCase()} dealt. Your decision is next when action reaches you.`;
         continue;
@@ -123,6 +125,8 @@ export function mountArena(root) {
     if (hand.status === "complete" && hand.result) {
       const winner = hand.result.winnerIds.map(id => profiles.find(p => p.id === id)?.name ?? id).join(", ");
       lastResult = `Hand complete · Winner: ${winner}`;
+      if (!actionHistory.some(item => item.text === lastResult)) actionHistory.push({street:"RESULT",text:lastResult});
+      syncStacks();
     }
   }
 
