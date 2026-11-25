@@ -99,3 +99,20 @@ test("a folded bettor can receive their unmatched excess back",()=>{
  assert.equal(h.players[0].stack,50);
  assert.equal(h.pot,200);
 });
+
+test("short big blind is posted as an all-in without inventing chips",()=>{
+ const h=startHand({players:[{id:"A",stack:100},{id:"B",stack:6},{id:"C",stack:100}],buttonId:"A",smallBlind:5,bigBlind:10,deck:orderedDeck});
+ assert.equal(h.players.find(p=>p.id==="B").streetContribution,6);
+ assert.equal(h.players.find(p=>p.id==="B").stack,0);
+ assert.equal(h.players.find(p=>p.id==="B").allIn,true);
+ assert.equal(h.pot,16);
+ assert.equal(h.round.currentPlayer,"C");
+});
+test("all-fold award preserves total chips",()=>{
+ let h=startHand({players:[{id:"A",stack:100},{id:"B",stack:100},{id:"C",stack:100}],buttonId:"A",smallBlind:5,bigBlind:10,deck:orderedDeck});
+ const total=h.players.reduce((n,p)=>n+p.stack,0)+h.pot;
+ ({hand:h}=applyHandAction(h,"C","fold"));
+ ({hand:h}=applyHandAction(h,"A","fold"));
+ assert.equal(h.status,"complete");
+ assert.equal(h.players.reduce((n,p)=>n+p.stack,0),total);
+});
