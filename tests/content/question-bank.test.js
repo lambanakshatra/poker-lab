@@ -4,7 +4,8 @@ import { BANK_TARGET_PER_CATEGORY, categories, questions } from "../../src/quest
 import { questionBatch02 } from "../../src/question-bank-batch-02.js";
 import { questionBatch03 } from "../../src/question-bank-batch-03.js";
 import { questionBatch04 } from "../../src/question-bank-batch-04.js";
-const allQuestions = [...questions, ...questionBatch02, ...questionBatch03, ...questionBatch04];
+import { questionBatch05 } from "../../src/question-bank-batch-05.js";
+const allQuestions = [...questions, ...questionBatch02, ...questionBatch03, ...questionBatch04, ...questionBatch05];
 
 test("question bank defines all 15 planned categories", () => {
   assert.equal(categories.length, 15);
@@ -27,6 +28,6 @@ test("question IDs are unique and answers point to valid options", () => {
   }
 });
 
-test("question bank target is 1,000 items per category", () => {
-  assert.equal(BANK_TARGET_PER_CATEGORY, 1000);
+test("question bank target is 200 items per category", () => {
+  assert.equal(BANK_TARGET_PER_CATEGORY, 200);
 });
