@@ -55,3 +55,4 @@ test("showdown settles a completed board and conserves chips",()=>{
  assert.equal(h.status,"complete");
  assert.equal(h.players.reduce((n,p)=>n+p.stack,0),totalBefore);
 });
+\ntest("heads-up button acts first on the flop",()=>{\n let h=startHand({players:[{id:"A",stack:100},{id:"B",stack:100}],buttonId:"A",smallBlind:5,bigBlind:10,deck:orderedDeck});\n ({hand:h}=applyHandAction(h,"A","call")); ({hand:h}=applyHandAction(h,"B","check"));\n h=advanceStreet(h);\n assert.equal(h.round.currentPlayer,"A");\n});\n
