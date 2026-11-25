@@ -47,7 +47,7 @@ test("showdown settles a completed board and conserves chips",()=>{
  ({hand:h}=applyHandAction(h,"A","call")); ({hand:h}=applyHandAction(h,"B","check"));
  h=advanceStreet(h);
  for(let street=0;street<3;street++){
-  ({hand:h}=applyHandAction(h,"B","check")); ({hand:h}=applyHandAction(h,"A","check"));
+  ({hand:h}=applyHandAction(h,"A","check")); ({hand:h}=applyHandAction(h,"B","check"));
   h=advanceStreet(h);
  }
  const totalBefore=h.players.reduce((n,p)=>n+p.stack,0)+h.pot;
