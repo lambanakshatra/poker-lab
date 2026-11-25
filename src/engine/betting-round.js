@@ -49,10 +49,11 @@ export function legalActions(state, playerId = state.currentPlayer) {
   if (!active(p)) return [];
   const toCall = Math.max(0, state.currentBet - p.streetContribution);
   const opponentsCanRespond = state.players.some(q => q.id !== p.id && !q.folded && !q.allIn && q.stack > 0);
+  const raiseReopened = p.actedAtBet === null || state.currentBet - p.actedAtBet >= state.lastFullRaise;
   const actions = ["fold"];
   if (toCall === 0) actions.push("check");
   else actions.push("call");
-  if (opponentsCanRespond) {
+  if (opponentsCanRespond && raiseReopened) {
     if (state.currentBet === 0 && p.stack >= state.lastFullRaise) actions.push("bet");
     if (state.currentBet > 0 && p.stack > toCall && p.streetContribution + p.stack >= state.currentBet + state.lastFullRaise) actions.push("raise");
   }
