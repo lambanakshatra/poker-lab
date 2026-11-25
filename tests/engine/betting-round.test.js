@@ -50,7 +50,7 @@ test("single short all-in raise does not reopen action", () => {
 
 test("cumulative short all-ins reaching a full raise reopen action", () => {
   let s=createBettingRound({players:[{id:"A",stack:500,streetContribution:100},{id:"B",stack:30,streetContribution:100},{id:"C",stack:40,streetContribution:100},{id:"D",stack:500,streetContribution:100}],firstToAct:"A",currentBet:100,minRaise:40});
-  ({state:s}=act(s,"A","call"));
+  ({state:s}=act(s,"A","check"));
   ({state:s}=act(s,"B","all-in"));
   ({state:s}=act(s,"C","all-in"));
   assert.equal(s.currentPlayer,"D");
