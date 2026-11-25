@@ -96,27 +96,47 @@ export function advanceStreet(hand) {
   const order=["preflop","flop","turn","river"];
   const index=order.indexOf(hand.street);
   if(index<0) throw new Error("Unknown street");
-  if(index===3 || hand.players.filter(p=>!p.folded && !p.allIn).length<=1) {
+  if(index===3) {
     hand.street="showdown";
     hand.history.push({type:"showdown_ready",board:[...hand.board]});
     return hand;
   }
-  const next=order[index+1];
-  const cardsToDeal=next==="flop"?3:1;
-  for(let i=0;i<cardsToDeal;i++) hand.board.push(hand.deck.shift());
-  assertUniqueCards([...hand.board,...hand.players.flatMap(p=>p.holeCards)]);
+
+  const noFurtherBetting=hand.players.filter(p=>!p.folded && !p.allIn && p.stack>0).length<=1;
+  const dealNextStreet=()=>{
+    const nextStreet=order[order.indexOf(hand.street)+1];
+    const count=nextStreet==="flop"?3:1;
+    for(let i=0;i<count;i++) {
+      const card=hand.deck.shift();
+      if(!card) throw new Error("Deck exhausted before showdown");
+      hand.board.push(card);
+    }
+    assertUniqueCards([...hand.board,...hand.players.flatMap(p=>p.holeCards)]);
+    hand.street=nextStreet;
+    hand.history.push({type:"street_dealt",street:nextStreet,board:[...hand.board]});
+  };
+
+  if(noFurtherBetting) {
+    while(hand.street!=="river") dealNextStreet();
+    hand.street="showdown";
+    hand.history.push({type:"showdown_ready",board:[...hand.board],reason:"no_further_betting"});
+    return hand;
+  }
+
+  dealNextStreet();
   for(const p of hand.players) p.streetContribution=0;
-  hand.street=next;
-  const button=hand.players[hand.buttonIndex];\n  const firstToAct=hand.players.length===2 && !button.folded && !button.allIn && button.stack>0\n    ? button.id\n    : nextActive(hand,hand.buttonIndex);
+  const button=hand.players[hand.buttonIndex];
+  const firstToAct=hand.players.length===2 && !button.folded && !button.allIn && button.stack>0
+    ? button.id
+    : nextActive(hand,hand.buttonIndex);
   if(!firstToAct) {
     hand.round={complete:true,pending:[],currentPlayer:null};
   } else {
     hand.round=createBettingRound({
       players:hand.players.map(p=>({id:p.id,stack:p.stack,streetContribution:0,folded:p.folded,allIn:p.allIn})),
-      firstToAct,currentBet:0,minRaise:hand.bigBlind,street:next
+      firstToAct,currentBet:0,minRaise:hand.bigBlind,street:hand.street
     });
   }
-  hand.history.push({type:"street_dealt",street:next,board:[...hand.board]});
   return hand;
 }
 
